@@ -18,6 +18,7 @@ import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as KioscoIndexRouteImport } from './routes/kiosco.index'
+import { Route as KioscoCompanyIdRouteImport } from './routes/kiosco.$companyId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,6 +65,11 @@ const KioscoIndexRoute = KioscoIndexRouteImport.update({
   path: '/kiosco/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KioscoCompanyIdRoute = KioscoCompanyIdRouteImport.update({
+  id: '/kiosco/$companyId',
+  path: '/kiosco/$companyId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/privacidad': typeof PrivacidadRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
+  '/kiosco/$companyId': typeof KioscoCompanyIdRoute
   '/kiosco/': typeof KioscoIndexRoute
 }
 export interface FileRoutesByTo {
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/privacidad': typeof PrivacidadRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
+  '/kiosco/$companyId': typeof KioscoCompanyIdRoute
   '/kiosco': typeof KioscoIndexRoute
 }
 export interface FileRoutesById {
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/privacidad': typeof PrivacidadRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
+  '/kiosco/$companyId': typeof KioscoCompanyIdRoute
   '/kiosco/': typeof KioscoIndexRoute
 }
 export interface FileRouteTypes {
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/reset-password'
     | '/terminos'
+    | '/kiosco/$companyId'
     | '/kiosco/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/reset-password'
     | '/terminos'
+    | '/kiosco/$companyId'
     | '/kiosco'
   id:
     | '__root__'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/reset-password'
     | '/terminos'
+    | '/kiosco/$companyId'
     | '/kiosco/'
   fileRoutesById: FileRoutesById
 }
@@ -144,6 +156,7 @@ export interface RootRouteChildren {
   PrivacidadRoute: typeof PrivacidadRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TerminosRoute: typeof TerminosRoute
+  KioscoCompanyIdRoute: typeof KioscoCompanyIdRoute
   KioscoIndexRoute: typeof KioscoIndexRoute
 }
 
@@ -212,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KioscoIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/kiosco/$companyId': {
+      id: '/kiosco/$companyId'
+      path: '/kiosco/$companyId'
+      fullPath: '/kiosco/$companyId'
+      preLoaderRoute: typeof KioscoCompanyIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -224,6 +244,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacidadRoute: PrivacidadRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TerminosRoute: TerminosRoute,
+  KioscoCompanyIdRoute: KioscoCompanyIdRoute,
   KioscoIndexRoute: KioscoIndexRoute,
 }
 export const routeTree = rootRouteImport

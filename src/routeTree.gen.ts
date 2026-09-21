@@ -10,15 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AvisoLegalRouteImport } from './routes/aviso-legal'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as PreciosRouteImport } from './routes/precios'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TerminosRouteImport } from './routes/terminos'
+import { Route as KioscoIndexRouteImport } from './routes/kiosco.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AvisoLegalRoute = AvisoLegalRouteImport.update({
@@ -41,60 +49,102 @@ const PrivacidadRoute = PrivacidadRouteImport.update({
   path: '/privacidad',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TerminosRoute = TerminosRouteImport.update({
   id: '/terminos',
   path: '/terminos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KioscoIndexRoute = KioscoIndexRouteImport.update({
+  id: '/kiosco/',
+  path: '/kiosco/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/faq': typeof FaqRoute
   '/precios': typeof PreciosRoute
   '/privacidad': typeof PrivacidadRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
+  '/kiosco/': typeof KioscoIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/faq': typeof FaqRoute
   '/precios': typeof PreciosRoute
   '/privacidad': typeof PrivacidadRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
+  '/kiosco': typeof KioscoIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/faq': typeof FaqRoute
   '/precios': typeof PreciosRoute
   '/privacidad': typeof PrivacidadRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
+  '/kiosco/': typeof KioscoIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/aviso-legal' | '/faq' | '/precios' | '/privacidad' | '/terminos'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/aviso-legal' | '/faq' | '/precios' | '/privacidad' | '/terminos'
-  id:
-    | '__root__'
     | '/'
+    | '/auth'
     | '/aviso-legal'
     | '/faq'
     | '/precios'
     | '/privacidad'
+    | '/reset-password'
     | '/terminos'
+    | '/kiosco/'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/auth'
+    | '/aviso-legal'
+    | '/faq'
+    | '/precios'
+    | '/privacidad'
+    | '/reset-password'
+    | '/terminos'
+    | '/kiosco'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/aviso-legal'
+    | '/faq'
+    | '/precios'
+    | '/privacidad'
+    | '/reset-password'
+    | '/terminos'
+    | '/kiosco/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   AvisoLegalRoute: typeof AvisoLegalRoute
   FaqRoute: typeof FaqRoute
   PreciosRoute: typeof PreciosRoute
   PrivacidadRoute: typeof PrivacidadRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   TerminosRoute: typeof TerminosRoute
+  KioscoIndexRoute: typeof KioscoIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -104,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/aviso-legal': {
@@ -134,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacidadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terminos': {
       id: '/terminos'
       path: '/terminos'
@@ -141,16 +205,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TerminosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/kiosco/': {
+      id: '/kiosco/'
+      path: '/kiosco'
+      fullPath: '/kiosco/'
+      preLoaderRoute: typeof KioscoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   AvisoLegalRoute: AvisoLegalRoute,
   FaqRoute: FaqRoute,
   PreciosRoute: PreciosRoute,
   PrivacidadRoute: PrivacidadRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   TerminosRoute: TerminosRoute,
+  KioscoIndexRoute: KioscoIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

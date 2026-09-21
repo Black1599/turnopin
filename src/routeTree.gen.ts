@@ -10,33 +10,197 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AvisoLegalRouteImport } from './routes/aviso-legal'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as PreciosRouteImport } from './routes/precios'
+import { Route as PrivacidadRouteImport } from './routes/privacidad'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as TerminosRouteImport } from './routes/terminos'
+import { Route as AuthenticatedPanelRouteImport } from './routes/_authenticated/panel'
+import { Route as KioscoIndexRouteImport } from './routes/kiosco.index'
+import { Route as KioscoCompanyIdRouteImport } from './routes/kiosco.$companyId'
+import { Route as AuthenticatedPanelIndexRouteImport } from './routes/_authenticated/panel.index'
+import { Route as AuthenticatedPanelEmpleadosRouteImport } from './routes/_authenticated/panel.empleados'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AvisoLegalRoute = AvisoLegalRouteImport.update({
+  id: '/aviso-legal',
+  path: '/aviso-legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PreciosRoute = PreciosRouteImport.update({
+  id: '/precios',
+  path: '/precios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadRoute = PrivacidadRouteImport.update({
+  id: '/privacidad',
+  path: '/privacidad',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TerminosRoute = TerminosRouteImport.update({
+  id: '/terminos',
+  path: '/terminos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedPanelRoute = AuthenticatedPanelRouteImport.update({
+  id: '/panel',
+  path: '/panel',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const KioscoIndexRoute = KioscoIndexRouteImport.update({
+  id: '/kiosco/',
+  path: '/kiosco/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KioscoCompanyIdRoute = KioscoCompanyIdRouteImport.update({
+  id: '/kiosco/$companyId',
+  path: '/kiosco/$companyId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedPanelIndexRoute = AuthenticatedPanelIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedPanelRoute,
+} as any)
+const AuthenticatedPanelEmpleadosRoute =
+  AuthenticatedPanelEmpleadosRouteImport.update({
+    id: '/empleados',
+    path: '/empleados',
+    getParentRoute: () => AuthenticatedPanelRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/aviso-legal': typeof AvisoLegalRoute
+  '/faq': typeof FaqRoute
+  '/precios': typeof PreciosRoute
+  '/privacidad': typeof PrivacidadRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/terminos': typeof TerminosRoute
+  '/panel': typeof AuthenticatedPanelRouteWithChildren
+  '/kiosco/$companyId': typeof KioscoCompanyIdRoute
+  '/kiosco/': typeof KioscoIndexRoute
+  '/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
+  '/panel/': typeof AuthenticatedPanelIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/aviso-legal': typeof AvisoLegalRoute
+  '/faq': typeof FaqRoute
+  '/precios': typeof PreciosRoute
+  '/privacidad': typeof PrivacidadRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/terminos': typeof TerminosRoute
+  '/kiosco/$companyId': typeof KioscoCompanyIdRoute
+  '/kiosco': typeof KioscoIndexRoute
+  '/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
+  '/panel': typeof AuthenticatedPanelIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/aviso-legal': typeof AvisoLegalRoute
+  '/faq': typeof FaqRoute
+  '/precios': typeof PreciosRoute
+  '/privacidad': typeof PrivacidadRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/terminos': typeof TerminosRoute
+  '/_authenticated/panel': typeof AuthenticatedPanelRouteWithChildren
+  '/kiosco/$companyId': typeof KioscoCompanyIdRoute
+  '/kiosco/': typeof KioscoIndexRoute
+  '/_authenticated/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
+  '/_authenticated/panel/': typeof AuthenticatedPanelIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/aviso-legal'
+    | '/faq'
+    | '/precios'
+    | '/privacidad'
+    | '/reset-password'
+    | '/terminos'
+    | '/panel'
+    | '/kiosco/$companyId'
+    | '/kiosco/'
+    | '/panel/empleados'
+    | '/panel/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/aviso-legal'
+    | '/faq'
+    | '/precios'
+    | '/privacidad'
+    | '/reset-password'
+    | '/terminos'
+    | '/kiosco/$companyId'
+    | '/kiosco'
+    | '/panel/empleados'
+    | '/panel'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/aviso-legal'
+    | '/faq'
+    | '/precios'
+    | '/privacidad'
+    | '/reset-password'
+    | '/terminos'
+    | '/_authenticated/panel'
+    | '/kiosco/$companyId'
+    | '/kiosco/'
+    | '/_authenticated/panel/empleados'
+    | '/_authenticated/panel/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  AvisoLegalRoute: typeof AvisoLegalRoute
+  FaqRoute: typeof FaqRoute
+  PreciosRoute: typeof PreciosRoute
+  PrivacidadRoute: typeof PrivacidadRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  TerminosRoute: typeof TerminosRoute
+  KioscoCompanyIdRoute: typeof KioscoCompanyIdRoute
+  KioscoIndexRoute: typeof KioscoIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +212,136 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aviso-legal': {
+      id: '/aviso-legal'
+      path: '/aviso-legal'
+      fullPath: '/aviso-legal'
+      preLoaderRoute: typeof AvisoLegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/precios': {
+      id: '/precios'
+      path: '/precios'
+      fullPath: '/precios'
+      preLoaderRoute: typeof PreciosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidad': {
+      id: '/privacidad'
+      path: '/privacidad'
+      fullPath: '/privacidad'
+      preLoaderRoute: typeof PrivacidadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terminos': {
+      id: '/terminos'
+      path: '/terminos'
+      fullPath: '/terminos'
+      preLoaderRoute: typeof TerminosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/panel': {
+      id: '/_authenticated/panel'
+      path: '/panel'
+      fullPath: '/panel'
+      preLoaderRoute: typeof AuthenticatedPanelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/kiosco/': {
+      id: '/kiosco/'
+      path: '/kiosco'
+      fullPath: '/kiosco/'
+      preLoaderRoute: typeof KioscoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kiosco/$companyId': {
+      id: '/kiosco/$companyId'
+      path: '/kiosco/$companyId'
+      fullPath: '/kiosco/$companyId'
+      preLoaderRoute: typeof KioscoCompanyIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/panel/': {
+      id: '/_authenticated/panel/'
+      path: '/'
+      fullPath: '/panel/'
+      preLoaderRoute: typeof AuthenticatedPanelIndexRouteImport
+      parentRoute: typeof AuthenticatedPanelRoute
+    }
+    '/_authenticated/panel/empleados': {
+      id: '/_authenticated/panel/empleados'
+      path: '/empleados'
+      fullPath: '/panel/empleados'
+      preLoaderRoute: typeof AuthenticatedPanelEmpleadosRouteImport
+      parentRoute: typeof AuthenticatedPanelRoute
+    }
   }
 }
 
+interface AuthenticatedPanelRouteChildren {
+  AuthenticatedPanelEmpleadosRoute: typeof AuthenticatedPanelEmpleadosRoute
+  AuthenticatedPanelIndexRoute: typeof AuthenticatedPanelIndexRoute
+}
+
+const AuthenticatedPanelRouteChildren: AuthenticatedPanelRouteChildren = {
+  AuthenticatedPanelEmpleadosRoute: AuthenticatedPanelEmpleadosRoute,
+  AuthenticatedPanelIndexRoute: AuthenticatedPanelIndexRoute,
+}
+
+const AuthenticatedPanelRouteWithChildren =
+  AuthenticatedPanelRoute._addFileChildren(AuthenticatedPanelRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedPanelRoute: typeof AuthenticatedPanelRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedPanelRoute: AuthenticatedPanelRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  AvisoLegalRoute: AvisoLegalRoute,
+  FaqRoute: FaqRoute,
+  PreciosRoute: PreciosRoute,
+  PrivacidadRoute: PrivacidadRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  TerminosRoute: TerminosRoute,
+  KioscoCompanyIdRoute: KioscoCompanyIdRoute,
+  KioscoIndexRoute: KioscoIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

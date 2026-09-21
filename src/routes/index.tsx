@@ -1,24 +1,41 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { SiteFooter, SiteHeader } from "@/components/site/SiteChrome";
+import { Faq, Features, FinalCta, Hero, HowItWorks, Pricing } from "@/components/site/sections";
+
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "TurnoPIN · Una pantalla. Un PIN. Y a trabajar." },
+      {
+        name: "description",
+        content:
+          "Control horario para bares, cafeterías y negocios pequeños: una tablet compartida, un PIN de 4 dígitos y registros listos para tu asesoría.",
+      },
+      { property: "og:title", content: "TurnoPIN · Una pantalla. Un PIN. Y a trabajar." },
+      {
+        property: "og:description",
+        content:
+          "Fichaje de empleados desde un único dispositivo del local. Prueba 30 días gratis desde 7,90 €/mes + IVA.",
+      },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-background">
+      <SiteHeader />
+      <main>
+        <Hero />
+        <HowItWorks />
+        <Features />
+        <Pricing />
+        <Faq />
+        <FinalCta />
+      </main>
+      <SiteFooter />
     </div>
   );
 }

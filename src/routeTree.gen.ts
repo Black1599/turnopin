@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AvisoLegalRouteImport } from './routes/aviso-legal'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -17,12 +18,19 @@ import { Route as PreciosRouteImport } from './routes/precios'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TerminosRouteImport } from './routes/terminos'
+import { Route as AuthenticatedPanelRouteImport } from './routes/_authenticated/panel'
 import { Route as KioscoIndexRouteImport } from './routes/kiosco.index'
 import { Route as KioscoCompanyIdRouteImport } from './routes/kiosco.$companyId'
+import { Route as AuthenticatedPanelIndexRouteImport } from './routes/_authenticated/panel.index'
+import { Route as AuthenticatedPanelEmpleadosRouteImport } from './routes/_authenticated/panel.empleados'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -60,6 +68,11 @@ const TerminosRoute = TerminosRouteImport.update({
   path: '/terminos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPanelRoute = AuthenticatedPanelRouteImport.update({
+  id: '/panel',
+  path: '/panel',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const KioscoIndexRoute = KioscoIndexRouteImport.update({
   id: '/kiosco/',
   path: '/kiosco/',
@@ -70,6 +83,17 @@ const KioscoCompanyIdRoute = KioscoCompanyIdRouteImport.update({
   path: '/kiosco/$companyId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPanelIndexRoute = AuthenticatedPanelIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedPanelRoute,
+} as any)
+const AuthenticatedPanelEmpleadosRoute =
+  AuthenticatedPanelEmpleadosRouteImport.update({
+    id: '/empleados',
+    path: '/empleados',
+    getParentRoute: () => AuthenticatedPanelRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -80,8 +104,11 @@ export interface FileRoutesByFullPath {
   '/privacidad': typeof PrivacidadRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
+  '/panel': typeof AuthenticatedPanelRouteWithChildren
   '/kiosco/$companyId': typeof KioscoCompanyIdRoute
   '/kiosco/': typeof KioscoIndexRoute
+  '/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
+  '/panel/': typeof AuthenticatedPanelIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,10 +121,13 @@ export interface FileRoutesByTo {
   '/terminos': typeof TerminosRoute
   '/kiosco/$companyId': typeof KioscoCompanyIdRoute
   '/kiosco': typeof KioscoIndexRoute
+  '/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
+  '/panel': typeof AuthenticatedPanelIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/faq': typeof FaqRoute
@@ -105,8 +135,11 @@ export interface FileRoutesById {
   '/privacidad': typeof PrivacidadRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
+  '/_authenticated/panel': typeof AuthenticatedPanelRouteWithChildren
   '/kiosco/$companyId': typeof KioscoCompanyIdRoute
   '/kiosco/': typeof KioscoIndexRoute
+  '/_authenticated/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
+  '/_authenticated/panel/': typeof AuthenticatedPanelIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -119,8 +152,11 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/reset-password'
     | '/terminos'
+    | '/panel'
     | '/kiosco/$companyId'
     | '/kiosco/'
+    | '/panel/empleados'
+    | '/panel/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,9 +169,12 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/kiosco/$companyId'
     | '/kiosco'
+    | '/panel/empleados'
+    | '/panel'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/auth'
     | '/aviso-legal'
     | '/faq'
@@ -143,12 +182,16 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/reset-password'
     | '/terminos'
+    | '/_authenticated/panel'
     | '/kiosco/$companyId'
     | '/kiosco/'
+    | '/_authenticated/panel/empleados'
+    | '/_authenticated/panel/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   AvisoLegalRoute: typeof AvisoLegalRoute
   FaqRoute: typeof FaqRoute
@@ -167,6 +210,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -218,6 +268,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TerminosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/panel': {
+      id: '/_authenticated/panel'
+      path: '/panel'
+      fullPath: '/panel'
+      preLoaderRoute: typeof AuthenticatedPanelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/kiosco/': {
       id: '/kiosco/'
       path: '/kiosco'
@@ -232,11 +289,50 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KioscoCompanyIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/panel/': {
+      id: '/_authenticated/panel/'
+      path: '/'
+      fullPath: '/panel/'
+      preLoaderRoute: typeof AuthenticatedPanelIndexRouteImport
+      parentRoute: typeof AuthenticatedPanelRoute
+    }
+    '/_authenticated/panel/empleados': {
+      id: '/_authenticated/panel/empleados'
+      path: '/empleados'
+      fullPath: '/panel/empleados'
+      preLoaderRoute: typeof AuthenticatedPanelEmpleadosRouteImport
+      parentRoute: typeof AuthenticatedPanelRoute
+    }
   }
 }
 
+interface AuthenticatedPanelRouteChildren {
+  AuthenticatedPanelEmpleadosRoute: typeof AuthenticatedPanelEmpleadosRoute
+  AuthenticatedPanelIndexRoute: typeof AuthenticatedPanelIndexRoute
+}
+
+const AuthenticatedPanelRouteChildren: AuthenticatedPanelRouteChildren = {
+  AuthenticatedPanelEmpleadosRoute: AuthenticatedPanelEmpleadosRoute,
+  AuthenticatedPanelIndexRoute: AuthenticatedPanelIndexRoute,
+}
+
+const AuthenticatedPanelRouteWithChildren =
+  AuthenticatedPanelRoute._addFileChildren(AuthenticatedPanelRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedPanelRoute: typeof AuthenticatedPanelRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedPanelRoute: AuthenticatedPanelRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   AvisoLegalRoute: AvisoLegalRoute,
   FaqRoute: FaqRoute,

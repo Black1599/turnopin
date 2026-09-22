@@ -219,6 +219,9 @@ export type Database = {
           id: string
           internal_notes: string | null
           local_time: string
+          original_local_time: string | null
+          original_server_timestamp: string | null
+          original_work_date: string | null
           server_timestamp: string
           type: string
           work_date: string
@@ -231,6 +234,9 @@ export type Database = {
           id?: string
           internal_notes?: string | null
           local_time: string
+          original_local_time?: string | null
+          original_server_timestamp?: string | null
+          original_work_date?: string | null
           server_timestamp?: string
           type: string
           work_date: string
@@ -243,6 +249,9 @@ export type Database = {
           id?: string
           internal_notes?: string | null
           local_time?: string
+          original_local_time?: string | null
+          original_server_timestamp?: string | null
+          original_work_date?: string | null
           server_timestamp?: string
           type?: string
           work_date?: string

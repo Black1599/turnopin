@@ -22,7 +22,11 @@ import { Route as AuthenticatedPanelRouteImport } from './routes/_authenticated/
 import { Route as KioscoIndexRouteImport } from './routes/kiosco.index'
 import { Route as KioscoCompanyIdRouteImport } from './routes/kiosco.$companyId'
 import { Route as AuthenticatedPanelIndexRouteImport } from './routes/_authenticated/panel.index'
+import { Route as AuthenticatedPanelAjustesRouteImport } from './routes/_authenticated/panel.ajustes'
+import { Route as AuthenticatedPanelCorreccionesRouteImport } from './routes/_authenticated/panel.correcciones'
 import { Route as AuthenticatedPanelEmpleadosRouteImport } from './routes/_authenticated/panel.empleados'
+import { Route as AuthenticatedPanelInformesRouteImport } from './routes/_authenticated/panel.informes'
+import { Route as AuthenticatedPanelRegistrosRouteImport } from './routes/_authenticated/panel.registros'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -88,10 +92,34 @@ const AuthenticatedPanelIndexRoute = AuthenticatedPanelIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedPanelRoute,
 } as any)
+const AuthenticatedPanelAjustesRoute =
+  AuthenticatedPanelAjustesRouteImport.update({
+    id: '/ajustes',
+    path: '/ajustes',
+    getParentRoute: () => AuthenticatedPanelRoute,
+  } as any)
+const AuthenticatedPanelCorreccionesRoute =
+  AuthenticatedPanelCorreccionesRouteImport.update({
+    id: '/correcciones',
+    path: '/correcciones',
+    getParentRoute: () => AuthenticatedPanelRoute,
+  } as any)
 const AuthenticatedPanelEmpleadosRoute =
   AuthenticatedPanelEmpleadosRouteImport.update({
     id: '/empleados',
     path: '/empleados',
+    getParentRoute: () => AuthenticatedPanelRoute,
+  } as any)
+const AuthenticatedPanelInformesRoute =
+  AuthenticatedPanelInformesRouteImport.update({
+    id: '/informes',
+    path: '/informes',
+    getParentRoute: () => AuthenticatedPanelRoute,
+  } as any)
+const AuthenticatedPanelRegistrosRoute =
+  AuthenticatedPanelRegistrosRouteImport.update({
+    id: '/registros',
+    path: '/registros',
     getParentRoute: () => AuthenticatedPanelRoute,
   } as any)
 
@@ -107,7 +135,11 @@ export interface FileRoutesByFullPath {
   '/panel': typeof AuthenticatedPanelRouteWithChildren
   '/kiosco/$companyId': typeof KioscoCompanyIdRoute
   '/kiosco/': typeof KioscoIndexRoute
+  '/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
+  '/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
   '/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
+  '/panel/informes': typeof AuthenticatedPanelInformesRoute
+  '/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/panel/': typeof AuthenticatedPanelIndexRoute
 }
 export interface FileRoutesByTo {
@@ -121,7 +153,11 @@ export interface FileRoutesByTo {
   '/terminos': typeof TerminosRoute
   '/kiosco/$companyId': typeof KioscoCompanyIdRoute
   '/kiosco': typeof KioscoIndexRoute
+  '/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
+  '/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
   '/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
+  '/panel/informes': typeof AuthenticatedPanelInformesRoute
+  '/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/panel': typeof AuthenticatedPanelIndexRoute
 }
 export interface FileRoutesById {
@@ -138,7 +174,11 @@ export interface FileRoutesById {
   '/_authenticated/panel': typeof AuthenticatedPanelRouteWithChildren
   '/kiosco/$companyId': typeof KioscoCompanyIdRoute
   '/kiosco/': typeof KioscoIndexRoute
+  '/_authenticated/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
+  '/_authenticated/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
   '/_authenticated/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
+  '/_authenticated/panel/informes': typeof AuthenticatedPanelInformesRoute
+  '/_authenticated/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/_authenticated/panel/': typeof AuthenticatedPanelIndexRoute
 }
 export interface FileRouteTypes {
@@ -155,7 +195,11 @@ export interface FileRouteTypes {
     | '/panel'
     | '/kiosco/$companyId'
     | '/kiosco/'
+    | '/panel/ajustes'
+    | '/panel/correcciones'
     | '/panel/empleados'
+    | '/panel/informes'
+    | '/panel/registros'
     | '/panel/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -169,7 +213,11 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/kiosco/$companyId'
     | '/kiosco'
+    | '/panel/ajustes'
+    | '/panel/correcciones'
     | '/panel/empleados'
+    | '/panel/informes'
+    | '/panel/registros'
     | '/panel'
   id:
     | '__root__'
@@ -185,7 +233,11 @@ export interface FileRouteTypes {
     | '/_authenticated/panel'
     | '/kiosco/$companyId'
     | '/kiosco/'
+    | '/_authenticated/panel/ajustes'
+    | '/_authenticated/panel/correcciones'
     | '/_authenticated/panel/empleados'
+    | '/_authenticated/panel/informes'
+    | '/_authenticated/panel/registros'
     | '/_authenticated/panel/'
   fileRoutesById: FileRoutesById
 }
@@ -296,6 +348,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPanelIndexRouteImport
       parentRoute: typeof AuthenticatedPanelRoute
     }
+    '/_authenticated/panel/ajustes': {
+      id: '/_authenticated/panel/ajustes'
+      path: '/ajustes'
+      fullPath: '/panel/ajustes'
+      preLoaderRoute: typeof AuthenticatedPanelAjustesRouteImport
+      parentRoute: typeof AuthenticatedPanelRoute
+    }
+    '/_authenticated/panel/correcciones': {
+      id: '/_authenticated/panel/correcciones'
+      path: '/correcciones'
+      fullPath: '/panel/correcciones'
+      preLoaderRoute: typeof AuthenticatedPanelCorreccionesRouteImport
+      parentRoute: typeof AuthenticatedPanelRoute
+    }
     '/_authenticated/panel/empleados': {
       id: '/_authenticated/panel/empleados'
       path: '/empleados'
@@ -303,16 +369,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPanelEmpleadosRouteImport
       parentRoute: typeof AuthenticatedPanelRoute
     }
+    '/_authenticated/panel/informes': {
+      id: '/_authenticated/panel/informes'
+      path: '/informes'
+      fullPath: '/panel/informes'
+      preLoaderRoute: typeof AuthenticatedPanelInformesRouteImport
+      parentRoute: typeof AuthenticatedPanelRoute
+    }
+    '/_authenticated/panel/registros': {
+      id: '/_authenticated/panel/registros'
+      path: '/registros'
+      fullPath: '/panel/registros'
+      preLoaderRoute: typeof AuthenticatedPanelRegistrosRouteImport
+      parentRoute: typeof AuthenticatedPanelRoute
+    }
   }
 }
 
 interface AuthenticatedPanelRouteChildren {
+  AuthenticatedPanelAjustesRoute: typeof AuthenticatedPanelAjustesRoute
+  AuthenticatedPanelCorreccionesRoute: typeof AuthenticatedPanelCorreccionesRoute
   AuthenticatedPanelEmpleadosRoute: typeof AuthenticatedPanelEmpleadosRoute
+  AuthenticatedPanelInformesRoute: typeof AuthenticatedPanelInformesRoute
+  AuthenticatedPanelRegistrosRoute: typeof AuthenticatedPanelRegistrosRoute
   AuthenticatedPanelIndexRoute: typeof AuthenticatedPanelIndexRoute
 }
 
 const AuthenticatedPanelRouteChildren: AuthenticatedPanelRouteChildren = {
+  AuthenticatedPanelAjustesRoute: AuthenticatedPanelAjustesRoute,
+  AuthenticatedPanelCorreccionesRoute: AuthenticatedPanelCorreccionesRoute,
   AuthenticatedPanelEmpleadosRoute: AuthenticatedPanelEmpleadosRoute,
+  AuthenticatedPanelInformesRoute: AuthenticatedPanelInformesRoute,
+  AuthenticatedPanelRegistrosRoute: AuthenticatedPanelRegistrosRoute,
   AuthenticatedPanelIndexRoute: AuthenticatedPanelIndexRoute,
 }
 

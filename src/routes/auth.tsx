@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -10,7 +10,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): { modo?: "registro" | "acceso"; volver?: string } => ({
     modo: (search["modo"] === "registro" ? "registro" : "acceso") as
       | "registro"
       | "acceso"
@@ -49,7 +49,6 @@ const RETURN_KEY = "turnopin.volver";
 
 function AuthPage() {
   const { modo, volver } = Route.useSearch();
-  const navigate = useNavigate();
   const [isSignup, setIsSignup] = useState(modo === "registro");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

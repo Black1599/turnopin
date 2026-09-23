@@ -1,4 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { companyQueryKey, logAudit, PLANS, useCompany } from "@/lib/company";
+import { companyQueryKey, logAudit, rpcErrorMessage, useCompany, useWorkers } from "@/lib/company";
 import { formatShortDate } from "@/lib/fmt";
 
 export const Route = createFileRoute("/_authenticated/panel/ajustes")({
@@ -15,34 +15,50 @@ export const Route = createFileRoute("/_authenticated/panel/ajustes")({
   head: () => ({
     meta: [
       { title: "Ajustes del negocio · TurnoPIN" },
-      {
-        name: "description",
-        content: "Actualiza los datos fiscales de tu negocio y consulta tu plan en TurnoPIN.",
-      },
+      { name: "description", content: "Datos fiscales, facturación y conservación de datos en TurnoPIN." },
       { property: "og:title", content: "Ajustes del negocio · TurnoPIN" },
-      {
-        property: "og:description",
-        content: "Datos del negocio, plan contratado y estado de la prueba gratuita.",
-      },
+      { property: "og:description", content: "Datos del negocio y estado de la suscripción." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
   }),
 });
 
+const FIELDS = [
+  ["legal_name", "Razón social / nombre fiscal *", true],
+  ["tax_id", "NIF / CIF *", true],
+  ["fiscal_address", "Dirección fiscal *", true],
+  ["country", "País *", true],
+  ["billing_email", "Email de facturación *", true],
+  ["commercial_name", "Nombre comercial (kiosco)", false],
+  ["ccc", "CCC (opcional)", false],
+] as const;
+
+type Key = (typeof FIELDS)[number][0];
+
 function SettingsPage() {
   const { data: company } = useCompany();
-  const queryClient = useQueryClient();
-  const [legalName, setLegalName] = useState("");
-  const [taxId, setTaxId] = useState("");
-  const [ccc, setCcc] = useState("");
+  const qc = useQueryClient();
+  const { data: workers = [] } = useWorkers(company?.id);
+  const [form, setForm] = useState<Record<Key, string>>({} as Record<Key, string>);
   const [saving, setSaving] = useState(false);
+
+  const outbox = useQuery({
+    queryKey: ["outbox", company?.id],
+    enabled: Boolean(company?.id),
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("notification_outbox")
+        .select("id", { count: "exact", head: true })
+        .eq("company_id", company!.id)
+        .eq("status", "pending");
+      return count ?? 0;
+    },
+  });
 
   useEffect(() => {
     if (!company) return;
-    setLegalName(company.legal_name);
-    setTaxId(company.tax_id ?? "");
-    setCcc(company.ccc ?? "");
+    setForm(Object.fromEntries(FIELDS.map(([k]) => [k, (company[k] as string | null) ?? ""])) as Record<Key, string>);
   }, [company]);
 
   async function handleSave(e: React.FormEvent) {
@@ -50,56 +66,47 @@ function SettingsPage() {
     if (!company) return;
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from("companies")
-        .update({ legal_name: legalName, tax_id: taxId || null, ccc: ccc || null })
-        .eq("id", company.id);
+      const payload = Object.fromEntries(FIELDS.map(([k, , req]) => [k, req ? form[k].trim() : form[k].trim() || null]));
+      const { error } = await supabase.from("companies").update(payload).eq("id", company.id);
       if (error) throw error;
-      await logAudit(company.id, "update_company", "company", company.id, { legal_name: legalName });
-      await queryClient.invalidateQueries({ queryKey: companyQueryKey });
+      await logAudit(company.id, "update_company", "company", company.id, payload);
+      await qc.invalidateQueries({ queryKey: companyQueryKey });
       toast.success("Datos guardados.");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "No se ha podido guardar");
+      toast.error(rpcErrorMessage(error, "No se ha podido guardar"));
     } finally {
       setSaving(false);
     }
   }
 
-  const plan = company ? PLANS[(company.plan as keyof typeof PLANS) ?? "local"] : undefined;
+  const active = workers.filter((w) => w.status === "active").length;
+  const trial = company?.subscription_status === "trialing";
 
   return (
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl font-bold md:text-3xl">Ajustes</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Datos del negocio y suscripción.</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Los documentos oficiales usan la razón social; el nombre comercial solo aparece en el kiosco.
+        </p>
       </header>
 
       <form onSubmit={handleSave} className="card-soft space-y-4 p-5 md:p-6">
         <h2 className="font-semibold">Datos del negocio</h2>
-        <div className="space-y-2">
-          <Label htmlFor="legal">Nombre fiscal *</Label>
-          <Input
-            id="legal"
-            required
-            className="h-11"
-            value={legalName}
-            onChange={(e) => setLegalName(e.target.value)}
-          />
-        </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="tax">CIF / NIF</Label>
-            <Input
-              id="tax"
-              className="h-11"
-              value={taxId}
-              onChange={(e) => setTaxId(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="ccc">CCC (opcional)</Label>
-            <Input id="ccc" className="h-11" value={ccc} onChange={(e) => setCcc(e.target.value)} />
-          </div>
+          {FIELDS.map(([k, label, req]) => (
+            <div key={k} className="space-y-2">
+              <Label htmlFor={k}>{label}</Label>
+              <Input
+                id={k}
+                required={req}
+                type={k === "billing_email" ? "email" : "text"}
+                className="h-11"
+                value={form[k] ?? ""}
+                onChange={(e) => setForm({ ...form, [k]: e.target.value })}
+              />
+            </div>
+          ))}
         </div>
         <Button type="submit" className="h-11" disabled={saving}>
           {saving ? "Guardando…" : "Guardar cambios"}
@@ -108,29 +115,40 @@ function SettingsPage() {
 
       <section className="card-soft space-y-3 p-5 md:p-6">
         <h2 className="font-semibold">Suscripción</h2>
+        <p className="text-sm">
+          <span className="font-medium">1,00 € + IVA por trabajador activo al mes.</span> Administrador gratis,
+          locales ilimitados, todas las funciones incluidas.
+        </p>
         <div className="text-sm text-muted-foreground">
-          Plan actual: <span className="font-medium text-foreground">{plan?.name ?? "Local"}</span>{" "}
-          · {plan?.price} · {plan?.limits}
-        </div>
-        <div className="text-sm text-muted-foreground">
-          Estado: <span className="font-medium text-foreground">{company?.subscription_status}</span>
-          {company?.trial_ends_at && ` · prueba hasta ${formatShortDate(company.trial_ends_at)}`}
+          Estado: <span className="font-medium text-foreground">{trial ? "Prueba gratuita" : company?.subscription_status}</span>
+          {trial && company && ` · hasta ${formatShortDate(company.trial_ends_at)}`} · {active} trabajadores activos
+          {!trial && ` · estimación ${active} € + IVA este ciclo`}
         </div>
         <p className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
-          El pago con tarjeta todavía no está activado. Durante la prueba puedes usar todas las
-          funciones; cuando conectemos la pasarela de pago podrás cambiar de plan desde aquí.
+          El pago todavía no está conectado. Cuando se active, podrás añadir tu método de pago aquí y gestionar
+          facturas en el portal de cliente. Si la prueba termina sin método de pago, la cuenta pasará a solo
+          lectura hasta que lo añadas.
         </p>
         <Button variant="outline" disabled>
-          Gestionar suscripción (próximamente)
+          Añadir método de pago (próximamente)
         </Button>
+      </section>
+
+      <section className="card-soft space-y-2 p-5 md:p-6">
+        <h2 className="font-semibold">Avisos por email</h2>
+        <p className="text-sm text-muted-foreground">
+          Recibirás un aviso inmediato por cada incidencia nueva y un resumen semanal los lunes en{" "}
+          {company?.billing_email || "tu email de facturación"}. {outbox.data ? `${outbox.data} avisos en cola.` : ""}{" "}
+          El envío se activará al conectar el proveedor de correo.
+        </p>
       </section>
 
       <section className="card-soft space-y-2 p-5 md:p-6">
         <h2 className="font-semibold">Conservación de datos</h2>
         <p className="text-sm text-muted-foreground">
-          Los fichajes se conservan un mínimo de 4 años y no pueden borrarse desde la aplicación.
-          Las correcciones se guardan como registros adicionales, conservando siempre el valor
-          original, el motivo y quién lo modificó.
+          Los fichajes originales no pueden modificarse ni borrarse. Las correcciones se guardan como
+          registros adicionales con motivo, autor y fecha. Tras una baja del servicio podrás exportar tus
+          datos durante 30 días en modo solo lectura.
         </p>
       </section>
     </div>

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDate, todayMadrid } from "@/lib/fmt";
 
-export const Route = createFileRoute("/kiosco/$companyId")({
+export const Route = createFileRoute("/kiosco/$token")({
   head: () => ({
     meta: [
       { title: "Kiosco de fichaje · TurnoPIN" },

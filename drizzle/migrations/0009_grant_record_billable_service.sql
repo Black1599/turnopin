@@ -1,0 +1,1 @@
+GRANT EXECUTE ON FUNCTION public.record_billable_workers(uuid) TO service_role;

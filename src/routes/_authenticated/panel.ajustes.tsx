@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { companyQueryKey, logAudit, rpcErrorMessage, useCompany, useWorkers } from "@/lib/company";
 import { formatShortDate } from "@/lib/fmt";
+import { createCheckout, createPortal } from "@/lib/billing.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/_authenticated/panel/ajustes")({
   component: SettingsPage,
@@ -60,6 +62,20 @@ function SettingsPage() {
     if (!company) return;
     setForm(Object.fromEntries(FIELDS.map(([k]) => [k, (company[k] as string | null) ?? ""])) as Record<Key, string>);
   }, [company]);
+
+  const checkout = useServerFn(createCheckout);
+  const portal = useServerFn(createPortal);
+  async function openBilling(kind: "checkout" | "portal") {
+    try {
+      const r = kind === "checkout" ? await checkout() : await portal();
+      if ("url" in r) window.location.href = r.url;
+      else if (r.error === "not_configured")
+        toast.info("El pago aún no está activado. Escríbenos a soporte@turnopin.es si lo necesitas ya.");
+      else toast.error("No se ha podido abrir el pago.");
+    } catch {
+      toast.error("No se ha podido abrir el pago.");
+    }
+  }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -125,13 +141,20 @@ function SettingsPage() {
           {!trial && ` · estimación ${active} € + IVA este ciclo`}
         </div>
         <p className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
-          El pago todavía no está conectado. Cuando se active, podrás añadir tu método de pago aquí y gestionar
-          facturas en el portal de cliente. Si la prueba termina sin método de pago, la cuenta pasará a solo
-          lectura hasta que lo añadas.
+          Cada trabajador activo en un ciclo cuenta una vez (1 € completo, sin prorrateo), aunque lo archives y
+          reactives. Durante la prueba no se cobra nada. Si la prueba termina sin método de pago, la cuenta pasa a
+          solo lectura hasta que lo añadas.
         </p>
-        <Button variant="outline" disabled>
-          Añadir método de pago (próximamente)
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => void openBilling("checkout")}>
+            Añadir método de pago
+          </Button>
+          {(company as { stripe_customer_id?: string | null } | null)?.stripe_customer_id && (
+            <Button variant="ghost" onClick={() => void openBilling("portal")}>
+              Facturas y datos de pago
+            </Button>
+          )}
+        </div>
       </section>
 
       <section className="card-soft space-y-2 p-5 md:p-6">

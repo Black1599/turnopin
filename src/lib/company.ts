@@ -5,6 +5,8 @@ export type Company = {
   id: string;
   legal_name: string;
   commercial_name: string | null;
+  stripe_customer_id?: string | null;
+  current_period_end?: string | null;
   tax_id: string | null;
   ccc: string | null;
   fiscal_address: string | null;
@@ -189,6 +191,8 @@ export function rpcErrorMessage(error: unknown, fallback = "No se ha podido comp
     already_resolved: "Esta incidencia ya estaba resuelta.",
     invalid_location: "Local no válido.",
     not_allowed: "No tienes permiso para esta acción.",
+    company_read_only:
+      "La cuenta está en solo lectura (prueba terminada o suscripción cancelada). Añade un método de pago en Ajustes.",
     companies_tax_id_unique: "Ya existe una cuenta o prueba con este NIF/CIF. Escríbenos a soporte@turnopin.es.",
   };
   for (const key of Object.keys(map)) if (msg.includes(key)) return map[key]!;

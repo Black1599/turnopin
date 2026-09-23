@@ -24,7 +24,9 @@ export const Route = createFileRoute("/api/public/cron/notifications")({
         }
         const { dispatchPending } = await import("@/lib/notifications.server");
         const dispatched = await dispatchPending(supabaseAdmin);
-        return Response.json({ ok: true, enqueued, ...dispatched });
+        const { reportBillableWorkers } = await import("@/lib/billing.server");
+        const billing = await reportBillableWorkers(supabaseAdmin);
+        return Response.json({ ok: true, enqueued, ...dispatched, billing });
       },
     },
   },

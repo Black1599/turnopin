@@ -22,6 +22,7 @@ import { Route as AuthenticatedPanelRouteImport } from './routes/_authenticated/
 import { Route as KioscoIndexRouteImport } from './routes/kiosco.index'
 import { Route as KioscoTokenRouteImport } from './routes/kiosco.$token'
 import { Route as MiTokenRouteImport } from './routes/mi.$token'
+import { Route as AuthenticatedInternoWhatsappRouteImport } from './routes/_authenticated/interno.whatsapp'
 import { Route as AuthenticatedPanelIndexRouteImport } from './routes/_authenticated/panel.index'
 import { Route as AuthenticatedPanelAjustesRouteImport } from './routes/_authenticated/panel.ajustes'
 import { Route as AuthenticatedPanelCorreccionesRouteImport } from './routes/_authenticated/panel.correcciones'
@@ -98,6 +99,12 @@ const MiTokenRoute = MiTokenRouteImport.update({
   path: '/mi/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedInternoWhatsappRoute =
+  AuthenticatedInternoWhatsappRouteImport.update({
+    id: '/interno/whatsapp',
+    path: '/interno/whatsapp',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPanelIndexRoute = AuthenticatedPanelIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -176,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/kiosco/$token': typeof KioscoTokenRoute
   '/mi/$token': typeof MiTokenRoute
   '/kiosco/': typeof KioscoIndexRoute
+  '/interno/whatsapp': typeof AuthenticatedInternoWhatsappRoute
   '/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
   '/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
   '/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
@@ -200,6 +208,7 @@ export interface FileRoutesByTo {
   '/kiosco/$token': typeof KioscoTokenRoute
   '/mi/$token': typeof MiTokenRoute
   '/kiosco': typeof KioscoIndexRoute
+  '/interno/whatsapp': typeof AuthenticatedInternoWhatsappRoute
   '/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
   '/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
   '/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
@@ -227,6 +236,7 @@ export interface FileRoutesById {
   '/kiosco/$token': typeof KioscoTokenRoute
   '/mi/$token': typeof MiTokenRoute
   '/kiosco/': typeof KioscoIndexRoute
+  '/_authenticated/interno/whatsapp': typeof AuthenticatedInternoWhatsappRoute
   '/_authenticated/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
   '/_authenticated/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
   '/_authenticated/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
@@ -254,6 +264,7 @@ export interface FileRouteTypes {
     | '/kiosco/$token'
     | '/mi/$token'
     | '/kiosco/'
+    | '/interno/whatsapp'
     | '/panel/ajustes'
     | '/panel/correcciones'
     | '/panel/empleados'
@@ -278,6 +289,7 @@ export interface FileRouteTypes {
     | '/kiosco/$token'
     | '/mi/$token'
     | '/kiosco'
+    | '/interno/whatsapp'
     | '/panel/ajustes'
     | '/panel/correcciones'
     | '/panel/empleados'
@@ -304,6 +316,7 @@ export interface FileRouteTypes {
     | '/kiosco/$token'
     | '/mi/$token'
     | '/kiosco/'
+    | '/_authenticated/interno/whatsapp'
     | '/_authenticated/panel/ajustes'
     | '/_authenticated/panel/correcciones'
     | '/_authenticated/panel/empleados'
@@ -428,6 +441,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MiTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/interno/whatsapp': {
+      id: '/_authenticated/interno/whatsapp'
+      path: '/interno/whatsapp'
+      fullPath: '/interno/whatsapp'
+      preLoaderRoute: typeof AuthenticatedInternoWhatsappRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/panel/': {
       id: '/_authenticated/panel/'
       path: '/'
@@ -535,10 +555,12 @@ const AuthenticatedPanelRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedPanelRoute: typeof AuthenticatedPanelRouteWithChildren
+  AuthenticatedInternoWhatsappRoute: typeof AuthenticatedInternoWhatsappRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPanelRoute: AuthenticatedPanelRouteWithChildren,
+  AuthenticatedInternoWhatsappRoute: AuthenticatedInternoWhatsappRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

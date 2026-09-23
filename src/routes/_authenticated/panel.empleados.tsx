@@ -249,7 +249,6 @@ function WorkersPage() {
     mutationFn: async (w: Worker) => {
       const { data, error } = await supabase.rpc("admin_whatsapp_link_code", { p_worker_id: w.id });
       if (error) throw error;
-      await logAudit(w.company_id, "whatsapp_link_code", "worker", w.id, { source: "whatsapp" });
       return data as string;
     },
     onSuccess: (code) => {

@@ -92,6 +92,13 @@
       "when": 1790202690713,
       "tag": "0012_whatsapp_telemetry_revoke_public",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1790204733066,
+      "tag": "0013_punch_serialization_monotonic_time",
+      "breakpoints": true
     }
   ]
 }

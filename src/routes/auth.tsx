@@ -142,7 +142,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: "/panel", replace: true });
+    goIn();
   }
 
   async function handleReset() {
@@ -168,11 +168,24 @@ function AuthPage() {
             <div className="space-y-4 text-center">
               <h1 className="text-2xl font-bold">Revisa tu correo</h1>
               <p className="text-sm text-muted-foreground">
-                Hemos enviado un enlace de confirmación a <strong>{email}</strong>. Confirma tu email
-                para entrar en el panel.
+                Hemos enviado un enlace de confirmación a <strong>{email}</strong>. Ábrelo desde este
+                dispositivo y entrarás directamente en el panel para completar los datos de tu negocio.
               </p>
-              <Button variant="outline" className="w-full" onClick={() => setEmailSent(false)}>
-                Volver
+              <p className="text-xs text-muted-foreground">
+                ¿No lo ves? Revisa la carpeta de spam o promociones.
+              </p>
+              <Button variant="outline" className="w-full" onClick={resendConfirmation}>
+                Reenviar correo
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full"
+                onClick={() => {
+                  setEmailSent(false);
+                  setIsSignup(false);
+                }}
+              >
+                Ya lo he confirmado · Entrar
               </Button>
             </div>
           ) : (
@@ -223,6 +236,14 @@ function AuthPage() {
                 <Button type="submit" className="h-11 w-full" disabled={loading}>
                   {loading ? "Un momento…" : isSignup ? "Crear cuenta" : "Entrar"}
                 </Button>
+                {needsConfirm && (
+                  <div className="rounded-md border bg-muted p-3 text-sm">
+                    Tu email aún no está confirmado. Abre el enlace que te enviamos al registrarte.{" "}
+                    <button type="button" className="font-medium text-primary hover:underline" onClick={resendConfirmation}>
+                      Reenviar correo
+                    </button>
+                  </div>
+                )}
               </form>
 
               <div className="mt-5 flex flex-col gap-2 text-center text-sm">

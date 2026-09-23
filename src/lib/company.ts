@@ -20,6 +20,17 @@ export type Company = {
   owner_id: string | null;
 };
 
+/** Mirrors public.company_writable() — the database enforces it; this only drives UI notices. */
+export function isCompanyWritable(c: Company, now = Date.now()) {
+  if (c.is_demo || c.is_pilot) return true;
+  const s = c.subscription_status;
+  if (s === "trialing") return new Date(c.trial_ends_at).getTime() > now;
+  if (s === "active" || s === "past_due") return true;
+  if (s === "canceled") return Boolean(c.current_period_end && new Date(c.current_period_end).getTime() > now);
+  return false;
+}
+
+
 export type Worker = {
   id: string;
   company_id: string;

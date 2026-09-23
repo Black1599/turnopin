@@ -100,7 +100,7 @@ function RecordsPage() {
         </select>
       </div>
 
-      <h2 className="text-sm font-semibold capitalize text-muted-foreground">{formatDate(date)}</h2>
+      <h2 className="text-sm font-semibold text-muted first-letter:uppercase-foreground">{formatDate(date)}</h2>
 
       {(entries.data ?? []).length === 0 ? (
         <div className="card-soft p-10 text-center text-sm text-muted-foreground">

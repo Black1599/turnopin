@@ -125,13 +125,20 @@ function SettingsPage() {
           {!trial && ` · estimación ${active} € + IVA este ciclo`}
         </div>
         <p className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
-          El pago todavía no está conectado. Cuando se active, podrás añadir tu método de pago aquí y gestionar
-          facturas en el portal de cliente. Si la prueba termina sin método de pago, la cuenta pasará a solo
-          lectura hasta que lo añadas.
+          Cada trabajador activo en un ciclo cuenta una vez (1 € completo, sin prorrateo), aunque lo archives y
+          reactives. Durante la prueba no se cobra nada. Si la prueba termina sin método de pago, la cuenta pasa a
+          solo lectura hasta que lo añadas.
         </p>
-        <Button variant="outline" disabled>
-          Añadir método de pago (próximamente)
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => void openBilling("checkout")}>
+            Añadir método de pago
+          </Button>
+          {company?.stripe_customer_id && (
+            <Button variant="ghost" onClick={() => void openBilling("portal")}>
+              Facturas y datos de pago
+            </Button>
+          )}
+        </div>
       </section>
 
       <section className="card-soft space-y-2 p-5 md:p-6">

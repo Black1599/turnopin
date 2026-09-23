@@ -1,11 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 
 type Result = { url: string } | { error: "not_configured" | "no_company" | "no_customer" };
 
-async function loadCompany(supabase: Parameters<Parameters<typeof requireSupabaseAuth.server>[0]>[0] extends never ? never : any) {
-  const { data } = await supabase.from("companies").select("*").limit(1);
+async function loadCompany(supabase: SupabaseClient<Database>) {
+  const { data } = await supabase.from("companies").select("*").order("created_at").limit(1);
   return data?.[0] ?? null;
 }
 

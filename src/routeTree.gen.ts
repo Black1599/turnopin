@@ -31,6 +31,7 @@ import { Route as AuthenticatedPanelInformesRouteImport } from './routes/_authen
 import { Route as AuthenticatedPanelLocalesRouteImport } from './routes/_authenticated/panel.locales'
 import { Route as AuthenticatedPanelRegistrosRouteImport } from './routes/_authenticated/panel.registros'
 import { Route as ApiPublicCronNotificationsRouteImport } from './routes/api/public/cron/notifications'
+import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -149,6 +150,11 @@ const ApiPublicCronNotificationsRoute =
     path: '/api/public/cron/notifications',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
+  id: '/api/public/stripe/webhook',
+  path: '/api/public/stripe/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -172,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/panel/': typeof AuthenticatedPanelIndexRoute
   '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -194,6 +201,7 @@ export interface FileRoutesByTo {
   '/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/panel': typeof AuthenticatedPanelIndexRoute
   '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -219,6 +227,7 @@ export interface FileRoutesById {
   '/_authenticated/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/_authenticated/panel/': typeof AuthenticatedPanelIndexRoute
   '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -244,6 +253,7 @@ export interface FileRouteTypes {
     | '/panel/registros'
     | '/panel/'
     | '/api/public/cron/notifications'
+    | '/api/public/stripe/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/panel/registros'
     | '/panel'
     | '/api/public/cron/notifications'
+    | '/api/public/stripe/webhook'
   id:
     | '__root__'
     | '/'
@@ -290,6 +301,7 @@ export interface FileRouteTypes {
     | '/_authenticated/panel/registros'
     | '/_authenticated/panel/'
     | '/api/public/cron/notifications'
+    | '/api/public/stripe/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -306,6 +318,7 @@ export interface RootRouteChildren {
   MiTokenRoute: typeof MiTokenRoute
   KioscoIndexRoute: typeof KioscoIndexRoute
   ApiPublicCronNotificationsRoute: typeof ApiPublicCronNotificationsRoute
+  ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -464,6 +477,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/stripe/webhook': {
+      id: '/api/public/stripe/webhook'
+      path: '/api/public/stripe/webhook'
+      fullPath: '/api/public/stripe/webhook'
+      preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -517,6 +537,7 @@ const rootRouteChildren: RootRouteChildren = {
   MiTokenRoute: MiTokenRoute,
   KioscoIndexRoute: KioscoIndexRoute,
   ApiPublicCronNotificationsRoute: ApiPublicCronNotificationsRoute,
+  ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

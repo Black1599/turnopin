@@ -21,6 +21,7 @@ import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as AuthenticatedPanelRouteImport } from './routes/_authenticated/panel'
 import { Route as KioscoIndexRouteImport } from './routes/kiosco.index'
 import { Route as KioscoTokenRouteImport } from './routes/kiosco.$token'
+import { Route as MiTokenRouteImport } from './routes/mi.$token'
 import { Route as AuthenticatedPanelIndexRouteImport } from './routes/_authenticated/panel.index'
 import { Route as AuthenticatedPanelAjustesRouteImport } from './routes/_authenticated/panel.ajustes'
 import { Route as AuthenticatedPanelCorreccionesRouteImport } from './routes/_authenticated/panel.correcciones'
@@ -89,6 +90,11 @@ const KioscoTokenRoute = KioscoTokenRouteImport.update({
   path: '/kiosco/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MiTokenRoute = MiTokenRouteImport.update({
+  id: '/mi/$token',
+  path: '/mi/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedPanelIndexRoute = AuthenticatedPanelIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -148,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/terminos': typeof TerminosRoute
   '/panel': typeof AuthenticatedPanelRouteWithChildren
   '/kiosco/$token': typeof KioscoTokenRoute
+  '/mi/$token': typeof MiTokenRoute
   '/kiosco/': typeof KioscoIndexRoute
   '/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
   '/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
@@ -168,6 +175,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
   '/kiosco/$token': typeof KioscoTokenRoute
+  '/mi/$token': typeof MiTokenRoute
   '/kiosco': typeof KioscoIndexRoute
   '/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
   '/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
@@ -191,6 +199,7 @@ export interface FileRoutesById {
   '/terminos': typeof TerminosRoute
   '/_authenticated/panel': typeof AuthenticatedPanelRouteWithChildren
   '/kiosco/$token': typeof KioscoTokenRoute
+  '/mi/$token': typeof MiTokenRoute
   '/kiosco/': typeof KioscoIndexRoute
   '/_authenticated/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
   '/_authenticated/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
@@ -214,6 +223,7 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/panel'
     | '/kiosco/$token'
+    | '/mi/$token'
     | '/kiosco/'
     | '/panel/ajustes'
     | '/panel/correcciones'
@@ -234,6 +244,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/terminos'
     | '/kiosco/$token'
+    | '/mi/$token'
     | '/kiosco'
     | '/panel/ajustes'
     | '/panel/correcciones'
@@ -256,6 +267,7 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/_authenticated/panel'
     | '/kiosco/$token'
+    | '/mi/$token'
     | '/kiosco/'
     | '/_authenticated/panel/ajustes'
     | '/_authenticated/panel/correcciones'
@@ -278,6 +290,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TerminosRoute: typeof TerminosRoute
   KioscoTokenRoute: typeof KioscoTokenRoute
+  MiTokenRoute: typeof MiTokenRoute
   KioscoIndexRoute: typeof KioscoIndexRoute
 }
 
@@ -365,6 +378,13 @@ declare module '@tanstack/react-router' {
       path: '/kiosco/$token'
       fullPath: '/kiosco/$token'
       preLoaderRoute: typeof KioscoTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mi/$token': {
+      id: '/mi/$token'
+      path: '/mi/$token'
+      fullPath: '/mi/$token'
+      preLoaderRoute: typeof MiTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/panel/': {
@@ -473,6 +493,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TerminosRoute: TerminosRoute,
   KioscoTokenRoute: KioscoTokenRoute,
+  MiTokenRoute: MiTokenRoute,
   KioscoIndexRoute: KioscoIndexRoute,
 }
 export const routeTree = rootRouteImport

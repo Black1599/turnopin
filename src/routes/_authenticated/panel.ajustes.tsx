@@ -149,7 +149,7 @@ function SettingsPage() {
           <Button variant="outline" onClick={() => void openBilling("checkout")}>
             Añadir método de pago
           </Button>
-          {company?.stripe_customer_id && (
+          {(company as { stripe_customer_id?: string | null } | null)?.stripe_customer_id && (
             <Button variant="ghost" onClick={() => void openBilling("portal")}>
               Facturas y datos de pago
             </Button>

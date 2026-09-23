@@ -15,6 +15,7 @@ export const Route = createFileRoute("/auth")({
       | "registro"
       | "acceso"
       | undefined,
+    volver: safePath(search["volver"]),
   }),
 
   head: () => ({
@@ -30,25 +31,60 @@ export const Route = createFileRoute("/auth")({
         property: "og:description",
         content: "Gestiona empleados, registros y correcciones desde el panel de TurnoPIN.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AuthPage,
 });
 
+/** Only same-origin panel paths are allowed as return destinations. */
+function safePath(v: unknown): string | undefined {
+  if (typeof v !== "string") return undefined;
+  if (!v.startsWith("/panel") || v.startsWith("//")) return undefined;
+  return v;
+}
+
+const RETURN_KEY = "turnopin.volver";
+
 function AuthPage() {
-  const { modo } = Route.useSearch();
+  const { modo, volver } = Route.useSearch();
   const navigate = useNavigate();
   const [isSignup, setIsSignup] = useState(modo === "registro");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [needsConfirm, setNeedsConfirm] = useState(false);
+
+  function goIn() {
+    const stored = safePath(sessionStorage.getItem(RETURN_KEY) ?? undefined);
+    sessionStorage.removeItem(RETURN_KEY);
+    window.location.replace(volver ?? stored ?? "/panel");
+  }
 
   useEffect(() => {
+    if (volver) sessionStorage.setItem(RETURN_KEY, volver);
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/panel", replace: true });
+      if (data.session) goIn();
     });
-  }, [navigate]);
+    // Confirmation links land here (public page); enter once the session is hydrated.
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) goIn();
+    });
+    return () => sub.subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function resendConfirmation() {
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/auth` },
+    });
+    if (error) toast.error("No se ha podido reenviar. Espera un minuto y vuelve a intentarlo.");
+    else toast.success("Te hemos reenviado el correo de confirmación");
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -57,17 +93,18 @@ function AuthPage() {
       return;
     }
     setLoading(true);
+    setNeedsConfirm(false);
     try {
       if (isSignup) {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/panel` },
+          options: { emailRedirectTo: `${window.location.origin}/auth` },
         });
         if (error) throw error;
         if (data.session) {
           toast.success("Cuenta creada");
-          navigate({ to: "/panel", replace: true });
+          goIn();
         } else {
           setEmailSent(true);
         }
@@ -75,10 +112,15 @@ function AuthPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Sesión iniciada");
-        navigate({ to: "/panel", replace: true });
+        goIn();
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Error inesperado";
+      if (message.toLowerCase().includes("email not confirmed")) {
+        setNeedsConfirm(true);
+        toast.error("Aún no has confirmado tu email. Revisa tu correo.");
+        return;
+      }
       toast.error(
         message.includes("Invalid login credentials")
           ? "Email o contraseña incorrectos"

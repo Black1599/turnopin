@@ -90,3 +90,27 @@ export function formatMinutes(min: number) {
   const m = min % 60;
   return `${h}h ${String(m).padStart(2, "0")}m`;
 }
+
+/** Converts a Madrid wall-clock date (YYYY-MM-DD) + time (HH:MM) into a UTC ISO string. */
+export function madridToIso(date: string, time: string) {
+  const [y, m, d] = date.split("-").map(Number);
+  const [h, mi] = time.split(":").map(Number);
+  const guess = Date.UTC(y!, m! - 1, d!, h!, mi!);
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date(guess));
+  const get = (t: string) => Number(parts.find((p) => p.type === t)?.value);
+  const asUtc = Date.UTC(get("year"), get("month") - 1, get("day"), get("hour"), get("minute"));
+  return new Date(guess - (asUtc - guess)).toISOString();
+}
+
+/** Madrid date (YYYY-MM-DD) of an ISO timestamp. */
+export function madridDate(iso: string) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(new Date(iso));
+}

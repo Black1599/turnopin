@@ -5,6 +5,8 @@ export type Company = {
   id: string;
   legal_name: string;
   commercial_name: string | null;
+  stripe_customer_id?: string | null;
+  current_period_end?: string | null;
   tax_id: string | null;
   ccc: string | null;
   fiscal_address: string | null;

@@ -160,7 +160,7 @@ function WorkerPortal() {
     correction_reason: e.corrected ? e.reason : null,
     correction_reason_code: null,
     corrected_at: null,
-    created_at: e.effective_timestamp,
+    created_at: "",
   }));
 
   return (

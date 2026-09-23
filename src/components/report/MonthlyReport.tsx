@@ -128,13 +128,13 @@ export function MonthlyReport({
                               {e.is_corrected && (
                                 <span className="text-xs text-muted-foreground">
                                   {" "}
-                                  (corregido; original {formatShortDate(e.original_work_date)} {e.original_local_time}; {e.correction_reason}; {formatDateTime(e.corrected_at!)})
+                                  (corregido; original {formatShortDate(e.original_work_date)} {e.original_local_time}; {e.correction_reason}{e.corrected_at ? `; ${formatDateTime(e.corrected_at)}` : ""})
                                 </span>
                               )}
                               {e.is_manual && (
                                 <span className="text-xs text-muted-foreground">
                                   {" "}
-                                  (añadido manualmente; {e.manual_reason}; {formatDateTime(e.created_at)})
+                                  (añadido manualmente; {e.manual_reason}{e.created_at ? `; ${formatDateTime(e.created_at)}` : ""})
                                 </span>
                               )}
                             </div>

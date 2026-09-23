@@ -10,7 +10,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (search: Record<string, unknown>): { modo?: "registro" | "acceso"; volver?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { modo?: "registro" | "acceso" | undefined; volver?: string | undefined } => ({
     modo: (search["modo"] === "registro" ? "registro" : "acceso") as
       | "registro"
       | "acceso"

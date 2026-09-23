@@ -32,7 +32,10 @@ export function SiteHeader() {
         </nav>
         <div className="flex items-center gap-2">
           <Button asChild variant="ghost" size="sm">
-            <Link to="/auth">Entrar</Link>
+            <Link to="/auth" search={{ modo: "acceso" }}>
+              Entrar
+            </Link>
+
           </Button>
           <Button asChild size="sm">
             <Link to="/auth" search={{ modo: "registro" }}>

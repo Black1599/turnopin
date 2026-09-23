@@ -122,7 +122,7 @@ function CorrectionsPage() {
         p_entry_id: target.id,
         p_corrected_timestamp: iso,
         p_reason: reason.trim(),
-        p_internal_notes: notes.trim() || undefined,
+        p_internal_notes: (notes.trim() || null) as unknown as string,
       });
       if (error) throw error;
       return data;

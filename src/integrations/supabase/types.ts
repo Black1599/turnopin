@@ -55,39 +55,108 @@ export type Database = {
           },
         ]
       }
+      billable_worker_cycles: {
+        Row: {
+          company_id: string
+          created_at: string
+          cycle_start: string
+          id: string
+          reported_to_stripe_at: string | null
+          worker_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          cycle_start: string
+          id?: string
+          reported_to_stripe_at?: string | null
+          worker_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          cycle_start?: string
+          id?: string
+          reported_to_stripe_at?: string | null
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billable_worker_cycles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "billable_worker_cycles_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       companies: {
         Row: {
+          billing_cycle_end: string | null
+          billing_cycle_start: string | null
+          billing_email: string | null
           ccc: string | null
+          commercial_name: string | null
+          country: string
           created_at: string
+          fiscal_address: string | null
           id: string
           is_demo: boolean
+          is_pilot: boolean
           legal_name: string
           owner_id: string | null
           plan: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
           subscription_status: string
           tax_id: string | null
           trial_ends_at: string
         }
         Insert: {
+          billing_cycle_end?: string | null
+          billing_cycle_start?: string | null
+          billing_email?: string | null
           ccc?: string | null
+          commercial_name?: string | null
+          country?: string
           created_at?: string
+          fiscal_address?: string | null
           id?: string
           is_demo?: boolean
+          is_pilot?: boolean
           legal_name: string
           owner_id?: string | null
           plan?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           subscription_status?: string
           tax_id?: string | null
           trial_ends_at?: string
         }
         Update: {
+          billing_cycle_end?: string | null
+          billing_cycle_start?: string | null
+          billing_email?: string | null
           ccc?: string | null
+          commercial_name?: string | null
+          country?: string
           created_at?: string
+          fiscal_address?: string | null
           id?: string
           is_demo?: boolean
+          is_pilot?: boolean
           legal_name?: string
           owner_id?: string | null
           plan?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           subscription_status?: string
           tax_id?: string | null
           trial_ends_at?: string
@@ -130,36 +199,42 @@ export type Database = {
         Row: {
           company_id: string
           corrected_by_admin_id: string | null
+          corrected_location_id: string | null
           corrected_timestamp: string
           created_at: string
           id: string
           internal_notes: string | null
           original_timestamp: string
           reason: string
+          reason_code: string | null
           time_entry_id: string
           worker_id: string
         }
         Insert: {
           company_id: string
           corrected_by_admin_id?: string | null
+          corrected_location_id?: string | null
           corrected_timestamp: string
           created_at?: string
           id?: string
           internal_notes?: string | null
           original_timestamp: string
           reason: string
+          reason_code?: string | null
           time_entry_id: string
           worker_id: string
         }
         Update: {
           company_id?: string
           corrected_by_admin_id?: string | null
+          corrected_location_id?: string | null
           corrected_timestamp?: string
           created_at?: string
           id?: string
           internal_notes?: string | null
           original_timestamp?: string
           reason?: string
+          reason_code?: string | null
           time_entry_id?: string
           worker_id?: string
         }
@@ -172,10 +247,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "corrections_corrected_location_id_fkey"
+            columns: ["corrected_location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "corrections_time_entry_id_fkey"
             columns: ["time_entry_id"]
             isOneToOne: false
             referencedRelation: "time_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corrections_time_entry_id_fkey"
+            columns: ["time_entry_id"]
+            isOneToOne: false
+            referencedRelation: "time_entries_effective"
             referencedColumns: ["id"]
           },
           {
@@ -193,6 +282,8 @@ export type Database = {
           created_at: string
           id: string
           kind: string
+          location_id: string | null
+          resolution_entry_id: string | null
           resolution_notes: string | null
           resolved_at: string | null
           resolved_by: string | null
@@ -208,6 +299,8 @@ export type Database = {
           created_at?: string
           id?: string
           kind?: string
+          location_id?: string | null
+          resolution_entry_id?: string | null
           resolution_notes?: string | null
           resolved_at?: string | null
           resolved_by?: string | null
@@ -223,6 +316,8 @@ export type Database = {
           created_at?: string
           id?: string
           kind?: string
+          location_id?: string | null
+          resolution_entry_id?: string | null
           resolution_notes?: string | null
           resolved_at?: string | null
           resolved_by?: string | null
@@ -242,6 +337,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "incidents_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_resolution_entry_id_fkey"
+            columns: ["resolution_entry_id"]
+            isOneToOne: false
+            referencedRelation: "time_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_resolution_entry_id_fkey"
+            columns: ["resolution_entry_id"]
+            isOneToOne: false
+            referencedRelation: "time_entries_effective"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "incidents_time_entry_id_fkey"
             columns: ["time_entry_id"]
             isOneToOne: false
@@ -249,10 +365,147 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "incidents_time_entry_id_fkey"
+            columns: ["time_entry_id"]
+            isOneToOne: false
+            referencedRelation: "time_entries_effective"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "incidents_worker_id_fkey"
             columns: ["worker_id"]
             isOneToOne: false
             referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kiosks: {
+        Row: {
+          active: boolean
+          company_id: string
+          created_at: string
+          id: string
+          location_id: string
+          revoked_at: string | null
+          token: string
+        }
+        Insert: {
+          active?: boolean
+          company_id: string
+          created_at?: string
+          id?: string
+          location_id: string
+          revoked_at?: string | null
+          token?: string
+        }
+        Update: {
+          active?: boolean
+          company_id?: string
+          created_at?: string
+          id?: string
+          location_id?: string
+          revoked_at?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kiosks_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kiosks_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      locations: {
+        Row: {
+          address: string
+          archived_at: string | null
+          company_id: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          address?: string
+          archived_at?: string | null
+          company_id: string
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          address?: string
+          archived_at?: string | null
+          company_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "locations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_outbox: {
+        Row: {
+          attempts: number
+          company_id: string
+          created_at: string
+          dedupe_key: string | null
+          id: string
+          kind: string
+          last_error: string | null
+          payload: Json
+          recipient: string | null
+          sent_at: string | null
+          status: string
+        }
+        Insert: {
+          attempts?: number
+          company_id: string
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          kind: string
+          last_error?: string | null
+          payload?: Json
+          recipient?: string | null
+          sent_at?: string | null
+          status?: string
+        }
+        Update: {
+          attempts?: number
+          company_id?: string
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          kind?: string
+          last_error?: string | null
+          payload?: Json
+          recipient?: string | null
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_outbox_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]
@@ -286,9 +539,14 @@ export type Database = {
           company_id: string
           corrected: boolean
           created_at: string
+          created_by: string | null
           id: string
+          incident_id: string | null
           internal_notes: string | null
+          is_manual: boolean
           local_time: string
+          location_id: string | null
+          manual_reason: string | null
           original_local_time: string | null
           original_server_timestamp: string | null
           original_work_date: string | null
@@ -301,9 +559,14 @@ export type Database = {
           company_id: string
           corrected?: boolean
           created_at?: string
+          created_by?: string | null
           id?: string
+          incident_id?: string | null
           internal_notes?: string | null
+          is_manual?: boolean
           local_time: string
+          location_id?: string | null
+          manual_reason?: string | null
           original_local_time?: string | null
           original_server_timestamp?: string | null
           original_work_date?: string | null
@@ -316,9 +579,14 @@ export type Database = {
           company_id?: string
           corrected?: boolean
           created_at?: string
+          created_by?: string | null
           id?: string
+          incident_id?: string | null
           internal_notes?: string | null
+          is_manual?: boolean
           local_time?: string
+          location_id?: string | null
+          manual_reason?: string | null
           original_local_time?: string | null
           original_server_timestamp?: string | null
           original_work_date?: string | null
@@ -336,7 +604,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "time_entries_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "time_entries_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      worker_locations: {
+        Row: {
+          company_id: string
+          created_at: string
+          location_id: string
+          worker_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          location_id: string
+          worker_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          location_id?: string
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worker_locations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "worker_locations_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "worker_locations_worker_id_fkey"
             columns: ["worker_id"]
             isOneToOne: false
             referencedRelation: "workers"
@@ -346,13 +664,16 @@ export type Database = {
       }
       workers: {
         Row: {
+          access_token: string
           archived_at: string | null
           break_paid: boolean
           break_tracking: boolean
           company_id: string
           created_at: string
           dni_nie: string | null
+          ended_at: string | null
           first_name: string
+          has_pin: boolean | null
           hired_at: string | null
           id: string
           last_name: string
@@ -362,13 +683,16 @@ export type Database = {
           status: string
         }
         Insert: {
+          access_token?: string
           archived_at?: string | null
           break_paid?: boolean
           break_tracking?: boolean
           company_id: string
           created_at?: string
           dni_nie?: string | null
+          ended_at?: string | null
           first_name: string
+          has_pin?: boolean | null
           hired_at?: string | null
           id?: string
           last_name: string
@@ -378,13 +702,16 @@ export type Database = {
           status?: string
         }
         Update: {
+          access_token?: string
           archived_at?: string | null
           break_paid?: boolean
           break_tracking?: boolean
           company_id?: string
           created_at?: string
           dni_nie?: string | null
+          ended_at?: string | null
           first_name?: string
+          has_pin?: boolean | null
           hired_at?: string | null
           id?: string
           last_name?: string
@@ -405,28 +732,154 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      time_entries_effective: {
+        Row: {
+          company_id: string | null
+          corrected_at: string | null
+          corrected_by: string | null
+          correction_reason: string | null
+          correction_reason_code: string | null
+          created_at: string | null
+          created_by: string | null
+          effective_local_time: string | null
+          effective_location_id: string | null
+          effective_timestamp: string | null
+          effective_work_date: string | null
+          id: string | null
+          incident_id: string | null
+          is_corrected: boolean | null
+          is_manual: boolean | null
+          manual_reason: string | null
+          original_local_time: string | null
+          original_location_id: string | null
+          original_timestamp: string | null
+          original_work_date: string | null
+          type: string | null
+          worker_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_entries_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_location_id_fkey"
+            columns: ["original_location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
-      admin_correct_entry: {
+      admin_add_manual_entry: {
         Args: {
-          p_corrected_timestamp: string
-          p_entry_id: string
-          p_internal_notes?: string
+          p_incident_id?: string
+          p_location_id: string
           p_reason: string
+          p_reason_code?: string
+          p_timestamp: string
+          p_type: string
+          p_worker_id: string
+        }
+        Returns: string
+      }
+      admin_add_manual_shift: {
+        Args: {
+          p_end: string
+          p_location_id: string
+          p_reason: string
+          p_reason_code?: string
+          p_start: string
+          p_worker_id: string
         }
         Returns: Json
       }
+      admin_correct_entry:
+        | {
+            Args: {
+              p_corrected_timestamp: string
+              p_entry_id: string
+              p_internal_notes?: string
+              p_reason: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_corrected_timestamp: string
+              p_entry_id: string
+              p_internal_notes?: string
+              p_location_id?: string
+              p_reason: string
+              p_reason_code?: string
+            }
+            Returns: Json
+          }
       admin_resolve_incident: {
         Args: { p_incident_id: string; p_notes?: string }
         Returns: Json
+      }
+      admin_resolve_incident_v2: {
+        Args: {
+          p_exit_timestamp: string
+          p_incident_id: string
+          p_reason: string
+          p_reason_code?: string
+        }
+        Returns: Json
+      }
+      admin_rotate_kiosk: { Args: { p_location_id: string }; Returns: string }
+      admin_rotate_worker_access: {
+        Args: { p_worker_id: string }
+        Returns: string
       }
       admin_set_worker_pin: {
         Args: { p_pin: string; p_worker_id: string }
         Returns: undefined
       }
+      enqueue_weekly_summaries: { Args: never; Returns: number }
       is_company_member: { Args: { _company_id: string }; Returns: boolean }
+      kiosk_action: {
+        Args: {
+          p_action?: string
+          p_new_pin?: string
+          p_no_recall?: boolean
+          p_pin: string
+          p_reported_time?: string
+          p_token: string
+          p_worker_id: string
+        }
+        Returns: Json
+      }
+      kiosk_check_pin: {
+        Args: {
+          p_pin: string
+          p_worker: Database["public"]["Tables"]["workers"]["Row"]
+        }
+        Returns: string
+      }
       kiosk_company: { Args: { p_company_id: string }; Returns: Json }
+      kiosk_info: { Args: { p_token: string }; Returns: Json }
+      kiosk_list_workers: {
+        Args: { p_token: string }
+        Returns: {
+          first_name: string
+          id: string
+          last_name: string
+        }[]
+      }
       kiosk_punch:
         | {
             Args: {
@@ -464,6 +917,21 @@ export type Database = {
           p_pin: string
           p_worker_id: string
         }
+        Returns: Json
+      }
+      worker_open_event: {
+        Args: { _worker_id: string }
+        Returns: {
+          effective_local_time: string
+          effective_timestamp: string
+          effective_work_date: string
+          id: string
+          location_id: string
+          type: string
+        }[]
+      }
+      worker_portal: {
+        Args: { p_access_token: string; p_month?: string; p_pin: string }
         Returns: Json
       }
       worker_state: { Args: { _worker_id: string }; Returns: string }

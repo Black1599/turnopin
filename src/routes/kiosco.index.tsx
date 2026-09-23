@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const DEMO_ID = "11111111-1111-1111-1111-111111111111";
+const DEMO_ID = "demo";
 
 export const Route = createFileRoute("/kiosco/")({
   head: () => ({
@@ -37,7 +37,7 @@ function KioscoIndex() {
       <main className="container-page section max-w-2xl">
         <h1 className="text-3xl font-bold md:text-4xl">Abrir el kiosco</h1>
         <p className="mt-3 text-muted-foreground">
-          Pega el código de kiosco de tu negocio (lo encuentras en el panel, en Ajustes) y guarda la
+          Pega el código de kiosco de tu negocio (lo encuentras en el panel, en Locales) y guarda la
           página en la pantalla de inicio de la tablet.
         </p>
         <form
@@ -45,7 +45,7 @@ function KioscoIndex() {
           onSubmit={(e) => {
             e.preventDefault();
             if (code.trim())
-              navigate({ to: "/kiosco/$companyId", params: { companyId: code.trim() } });
+              navigate({ to: "/kiosco/$token", params: { token: code.trim() } });
           }}
         >
           <div className="space-y-2">
@@ -54,7 +54,7 @@ function KioscoIndex() {
               id="code"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="00000000-0000-0000-0000-000000000000"
+              placeholder="Código del kiosco"
               className="h-11"
             />
           </div>
@@ -68,7 +68,7 @@ function KioscoIndex() {
             Abre el kiosco de demostración del negocio ficticio «Bar Demo».
           </p>
           <Button asChild variant="outline" className="mt-4">
-            <Link to="/kiosco/$companyId" params={{ companyId: DEMO_ID }}>
+            <Link to="/kiosco/$token" params={{ token: DEMO_ID }}>
               Abrir kiosco de demo
             </Link>
           </Button>

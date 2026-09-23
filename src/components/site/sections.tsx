@@ -33,17 +33,14 @@ export function Hero() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 px-7 text-base">
-              <Link
-                to="/kiosco/$companyId"
-                params={{ companyId: "11111111-1111-1111-1111-111111111111" }}
-              >
+              <Link to="/kiosco/$token" params={{ token: "demo" }}>
                 Ver el kiosco de demo
               </Link>
 
             </Button>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
-            Sin tarjeta para empezar · Alta en 5 minutos · Desde 7,90 €/mes + IVA
+            Sin tarjeta para empezar · Alta en 5 minutos · 1 € + IVA por trabajador/mes
           </p>
         </div>
         <div className="card-soft p-6">
@@ -163,67 +160,59 @@ export function Features() {
   );
 }
 
-const plans = [
-  {
-    name: "Local",
-    price: "7,90 €",
-    note: "/mes + IVA",
-    features: ["Hasta 10 empleados", "1 centro de trabajo", "Kiosco con PIN", "Informe mensual y CSV"],
-  },
-  {
-    name: "Local+",
-    price: "14,90 €",
-    note: "/mes + IVA",
-    highlight: true,
-    features: [
-      "Hasta 30 empleados",
-      "Hasta 3 centros de trabajo",
-      "Kiosco con PIN",
-      "Informe mensual y CSV",
-      "Correcciones con historial",
-    ],
-  },
+const included = [
+  "Locales ilimitados, un kiosco por local",
+  "Kiosco con PIN y pausas opcionales",
+  "Incidencias y correcciones con historial",
+  "Acceso personal de cada trabajador (solo lectura)",
+  "Informes mensuales en PDF y CSV",
+  "Administrador gratis",
 ];
 
 export function Pricing() {
   return (
     <section className="section border-b bg-surface">
       <div className="container-page">
-        <h2 className="text-3xl font-bold md:text-4xl">Precios claros</h2>
-        <p className="mt-3 text-muted-foreground">30 días de prueba gratis. Sin compromiso.</p>
-        <div className="mt-10 grid gap-6 md:max-w-3xl md:grid-cols-2">
-          {plans.map((p) => (
-            <div
-              key={p.name}
-              className={`card-soft p-7 ${p.highlight ? "ring-2 ring-primary" : ""}`}
-            >
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold">{p.name}</h3>
-                {p.highlight && <Badge>Más elegido</Badge>}
-              </div>
-              <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-4xl font-extrabold">{p.price}</span>
-                <span className="text-sm text-muted-foreground">{p.note}</span>
-              </div>
-              <ul className="mt-6 space-y-3 text-sm">
-                {p.features.map((f) => (
-                  <li key={f} className="flex gap-2">
-                    <Check className="h-4 w-4 shrink-0 text-primary" />
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <Button asChild className="mt-7 h-11 w-full" variant={p.highlight ? "default" : "outline"}>
-                <Link to="/auth" search={{ modo: "registro" }}>
-                  Probar 30 días gratis
-                </Link>
-              </Button>
-            </div>
-          ))}
+        <h2 className="text-3xl font-bold md:text-4xl">Un precio. Todo incluido.</h2>
+        <p className="mt-3 text-muted-foreground">
+          30 días gratis sin tarjeta. Sin permanencia, sin mínimo mensual.
+        </p>
+        <div className="card-soft mt-10 max-w-xl p-7 ring-2 ring-primary">
+          <div className="flex items-baseline gap-2">
+            <span className="text-5xl font-extrabold">1 €</span>
+            <span className="text-sm text-muted-foreground">+ IVA por trabajador activo / mes</span>
+          </div>
+          <ul className="mt-6 space-y-3 text-sm">
+            {included.map((f) => (
+              <li key={f} className="flex gap-2">
+                <Check className="h-4 w-4 shrink-0 text-primary" />
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-6 space-y-2 rounded-lg bg-muted p-4 text-xs text-muted-foreground">
+            <p>
+              Cada trabajador activo en un ciclo mensual cuenta 1 € completo, sin prorrateo, y como
+              máximo una vez por ciclo aunque se archive y se reactive.
+            </p>
+            <p>Si archivas a alguien, deja de contar desde la siguiente renovación.</p>
+            <p>Durante la prueba no se cobra ningún trabajador. Una prueba por NIF/CIF.</p>
+          </div>
+          <Button asChild className="mt-7 h-11 w-full">
+            <Link to="/auth" search={{ modo: "registro" }}>
+              Probar 30 días gratis
+            </Link>
+          </Button>
+          <p className="mt-4 text-center text-sm text-muted-foreground">
+            Alta directa hasta 30 trabajadores. ¿Necesitas más capacidad?{" "}
+            <a href="mailto:soporte@turnopin.es" className="font-medium text-primary underline">
+              Contacta con nosotros
+            </a>
+          </p>
         </div>
         <p className="mt-6 max-w-2xl text-xs text-muted-foreground">
-          TurnoPIN es una herramienta de registro horario. No ofrecemos garantías de cumplimiento
-          normativo: consulta con tu asesor laboral cómo aplicarlo en tu negocio.
+          TurnoPIN es una herramienta diseñada para facilitar el registro de jornada. No ofrecemos
+          garantías de cumplimiento normativo: consulta con tu asesor laboral cómo aplicarlo.
         </p>
       </div>
     </section>

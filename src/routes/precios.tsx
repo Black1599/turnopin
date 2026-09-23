@@ -6,16 +6,16 @@ import { Faq, FinalCta, Pricing } from "@/components/site/sections";
 export const Route = createFileRoute("/precios")({
   head: () => ({
     meta: [
-      { title: "Precios de TurnoPIN · desde 7,90 €/mes + IVA" },
+      { title: "Precios de TurnoPIN · 1 € + IVA por trabajador al mes" },
       {
         name: "description",
         content:
-          "Plan Local 7,90 €/mes + IVA hasta 10 empleados y Local+ 14,90 €/mes + IVA hasta 30 empleados. 30 días de prueba gratis.",
+          "1 € + IVA por trabajador activo al mes, todo incluido y locales ilimitados. 30 días de prueba gratis sin tarjeta.",
       },
       { property: "og:title", content: "Precios de TurnoPIN" },
       {
         property: "og:description",
-        content: "Dos planes sencillos para bares y negocios pequeños, con 30 días gratis.",
+        content: "Un único precio por trabajador, sin permanencia y con 30 días gratis.",
       },
     ],
   }),

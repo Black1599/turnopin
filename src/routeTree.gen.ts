@@ -20,12 +20,14 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as AuthenticatedPanelRouteImport } from './routes/_authenticated/panel'
 import { Route as KioscoIndexRouteImport } from './routes/kiosco.index'
-import { Route as KioscoCompanyIdRouteImport } from './routes/kiosco.$companyId'
+import { Route as KioscoTokenRouteImport } from './routes/kiosco.$token'
 import { Route as AuthenticatedPanelIndexRouteImport } from './routes/_authenticated/panel.index'
 import { Route as AuthenticatedPanelAjustesRouteImport } from './routes/_authenticated/panel.ajustes'
 import { Route as AuthenticatedPanelCorreccionesRouteImport } from './routes/_authenticated/panel.correcciones'
 import { Route as AuthenticatedPanelEmpleadosRouteImport } from './routes/_authenticated/panel.empleados'
+import { Route as AuthenticatedPanelIncidenciasRouteImport } from './routes/_authenticated/panel.incidencias'
 import { Route as AuthenticatedPanelInformesRouteImport } from './routes/_authenticated/panel.informes'
+import { Route as AuthenticatedPanelLocalesRouteImport } from './routes/_authenticated/panel.locales'
 import { Route as AuthenticatedPanelRegistrosRouteImport } from './routes/_authenticated/panel.registros'
 
 const IndexRoute = IndexRouteImport.update({
@@ -82,9 +84,9 @@ const KioscoIndexRoute = KioscoIndexRouteImport.update({
   path: '/kiosco/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const KioscoCompanyIdRoute = KioscoCompanyIdRouteImport.update({
-  id: '/kiosco/$companyId',
-  path: '/kiosco/$companyId',
+const KioscoTokenRoute = KioscoTokenRouteImport.update({
+  id: '/kiosco/$token',
+  path: '/kiosco/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedPanelIndexRoute = AuthenticatedPanelIndexRouteImport.update({
@@ -110,10 +112,22 @@ const AuthenticatedPanelEmpleadosRoute =
     path: '/empleados',
     getParentRoute: () => AuthenticatedPanelRoute,
   } as any)
+const AuthenticatedPanelIncidenciasRoute =
+  AuthenticatedPanelIncidenciasRouteImport.update({
+    id: '/incidencias',
+    path: '/incidencias',
+    getParentRoute: () => AuthenticatedPanelRoute,
+  } as any)
 const AuthenticatedPanelInformesRoute =
   AuthenticatedPanelInformesRouteImport.update({
     id: '/informes',
     path: '/informes',
+    getParentRoute: () => AuthenticatedPanelRoute,
+  } as any)
+const AuthenticatedPanelLocalesRoute =
+  AuthenticatedPanelLocalesRouteImport.update({
+    id: '/locales',
+    path: '/locales',
     getParentRoute: () => AuthenticatedPanelRoute,
   } as any)
 const AuthenticatedPanelRegistrosRoute =
@@ -133,12 +147,14 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
   '/panel': typeof AuthenticatedPanelRouteWithChildren
-  '/kiosco/$companyId': typeof KioscoCompanyIdRoute
+  '/kiosco/$token': typeof KioscoTokenRoute
   '/kiosco/': typeof KioscoIndexRoute
   '/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
   '/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
   '/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
+  '/panel/incidencias': typeof AuthenticatedPanelIncidenciasRoute
   '/panel/informes': typeof AuthenticatedPanelInformesRoute
+  '/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/panel/': typeof AuthenticatedPanelIndexRoute
 }
@@ -151,12 +167,14 @@ export interface FileRoutesByTo {
   '/privacidad': typeof PrivacidadRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
-  '/kiosco/$companyId': typeof KioscoCompanyIdRoute
+  '/kiosco/$token': typeof KioscoTokenRoute
   '/kiosco': typeof KioscoIndexRoute
   '/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
   '/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
   '/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
+  '/panel/incidencias': typeof AuthenticatedPanelIncidenciasRoute
   '/panel/informes': typeof AuthenticatedPanelInformesRoute
+  '/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/panel': typeof AuthenticatedPanelIndexRoute
 }
@@ -172,12 +190,14 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
   '/_authenticated/panel': typeof AuthenticatedPanelRouteWithChildren
-  '/kiosco/$companyId': typeof KioscoCompanyIdRoute
+  '/kiosco/$token': typeof KioscoTokenRoute
   '/kiosco/': typeof KioscoIndexRoute
   '/_authenticated/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
   '/_authenticated/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
   '/_authenticated/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
+  '/_authenticated/panel/incidencias': typeof AuthenticatedPanelIncidenciasRoute
   '/_authenticated/panel/informes': typeof AuthenticatedPanelInformesRoute
+  '/_authenticated/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/_authenticated/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/_authenticated/panel/': typeof AuthenticatedPanelIndexRoute
 }
@@ -193,12 +213,14 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/terminos'
     | '/panel'
-    | '/kiosco/$companyId'
+    | '/kiosco/$token'
     | '/kiosco/'
     | '/panel/ajustes'
     | '/panel/correcciones'
     | '/panel/empleados'
+    | '/panel/incidencias'
     | '/panel/informes'
+    | '/panel/locales'
     | '/panel/registros'
     | '/panel/'
   fileRoutesByTo: FileRoutesByTo
@@ -211,12 +233,14 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/reset-password'
     | '/terminos'
-    | '/kiosco/$companyId'
+    | '/kiosco/$token'
     | '/kiosco'
     | '/panel/ajustes'
     | '/panel/correcciones'
     | '/panel/empleados'
+    | '/panel/incidencias'
     | '/panel/informes'
+    | '/panel/locales'
     | '/panel/registros'
     | '/panel'
   id:
@@ -231,12 +255,14 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/terminos'
     | '/_authenticated/panel'
-    | '/kiosco/$companyId'
+    | '/kiosco/$token'
     | '/kiosco/'
     | '/_authenticated/panel/ajustes'
     | '/_authenticated/panel/correcciones'
     | '/_authenticated/panel/empleados'
+    | '/_authenticated/panel/incidencias'
     | '/_authenticated/panel/informes'
+    | '/_authenticated/panel/locales'
     | '/_authenticated/panel/registros'
     | '/_authenticated/panel/'
   fileRoutesById: FileRoutesById
@@ -251,7 +277,7 @@ export interface RootRouteChildren {
   PrivacidadRoute: typeof PrivacidadRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TerminosRoute: typeof TerminosRoute
-  KioscoCompanyIdRoute: typeof KioscoCompanyIdRoute
+  KioscoTokenRoute: typeof KioscoTokenRoute
   KioscoIndexRoute: typeof KioscoIndexRoute
 }
 
@@ -334,11 +360,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KioscoIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/kiosco/$companyId': {
-      id: '/kiosco/$companyId'
-      path: '/kiosco/$companyId'
-      fullPath: '/kiosco/$companyId'
-      preLoaderRoute: typeof KioscoCompanyIdRouteImport
+    '/kiosco/$token': {
+      id: '/kiosco/$token'
+      path: '/kiosco/$token'
+      fullPath: '/kiosco/$token'
+      preLoaderRoute: typeof KioscoTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/panel/': {
@@ -369,11 +395,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPanelEmpleadosRouteImport
       parentRoute: typeof AuthenticatedPanelRoute
     }
+    '/_authenticated/panel/incidencias': {
+      id: '/_authenticated/panel/incidencias'
+      path: '/incidencias'
+      fullPath: '/panel/incidencias'
+      preLoaderRoute: typeof AuthenticatedPanelIncidenciasRouteImport
+      parentRoute: typeof AuthenticatedPanelRoute
+    }
     '/_authenticated/panel/informes': {
       id: '/_authenticated/panel/informes'
       path: '/informes'
       fullPath: '/panel/informes'
       preLoaderRoute: typeof AuthenticatedPanelInformesRouteImport
+      parentRoute: typeof AuthenticatedPanelRoute
+    }
+    '/_authenticated/panel/locales': {
+      id: '/_authenticated/panel/locales'
+      path: '/locales'
+      fullPath: '/panel/locales'
+      preLoaderRoute: typeof AuthenticatedPanelLocalesRouteImport
       parentRoute: typeof AuthenticatedPanelRoute
     }
     '/_authenticated/panel/registros': {
@@ -390,7 +430,9 @@ interface AuthenticatedPanelRouteChildren {
   AuthenticatedPanelAjustesRoute: typeof AuthenticatedPanelAjustesRoute
   AuthenticatedPanelCorreccionesRoute: typeof AuthenticatedPanelCorreccionesRoute
   AuthenticatedPanelEmpleadosRoute: typeof AuthenticatedPanelEmpleadosRoute
+  AuthenticatedPanelIncidenciasRoute: typeof AuthenticatedPanelIncidenciasRoute
   AuthenticatedPanelInformesRoute: typeof AuthenticatedPanelInformesRoute
+  AuthenticatedPanelLocalesRoute: typeof AuthenticatedPanelLocalesRoute
   AuthenticatedPanelRegistrosRoute: typeof AuthenticatedPanelRegistrosRoute
   AuthenticatedPanelIndexRoute: typeof AuthenticatedPanelIndexRoute
 }
@@ -399,7 +441,9 @@ const AuthenticatedPanelRouteChildren: AuthenticatedPanelRouteChildren = {
   AuthenticatedPanelAjustesRoute: AuthenticatedPanelAjustesRoute,
   AuthenticatedPanelCorreccionesRoute: AuthenticatedPanelCorreccionesRoute,
   AuthenticatedPanelEmpleadosRoute: AuthenticatedPanelEmpleadosRoute,
+  AuthenticatedPanelIncidenciasRoute: AuthenticatedPanelIncidenciasRoute,
   AuthenticatedPanelInformesRoute: AuthenticatedPanelInformesRoute,
+  AuthenticatedPanelLocalesRoute: AuthenticatedPanelLocalesRoute,
   AuthenticatedPanelRegistrosRoute: AuthenticatedPanelRegistrosRoute,
   AuthenticatedPanelIndexRoute: AuthenticatedPanelIndexRoute,
 }
@@ -428,7 +472,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacidadRoute: PrivacidadRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TerminosRoute: TerminosRoute,
-  KioscoCompanyIdRoute: KioscoCompanyIdRoute,
+  KioscoTokenRoute: KioscoTokenRoute,
   KioscoIndexRoute: KioscoIndexRoute,
 }
 export const routeTree = rootRouteImport

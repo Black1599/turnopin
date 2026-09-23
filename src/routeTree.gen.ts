@@ -30,6 +30,7 @@ import { Route as AuthenticatedPanelIncidenciasRouteImport } from './routes/_aut
 import { Route as AuthenticatedPanelInformesRouteImport } from './routes/_authenticated/panel.informes'
 import { Route as AuthenticatedPanelLocalesRouteImport } from './routes/_authenticated/panel.locales'
 import { Route as AuthenticatedPanelRegistrosRouteImport } from './routes/_authenticated/panel.registros'
+import { Route as ApiPublicCronNotificationsRouteImport } from './routes/api/public/cron/notifications'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -142,6 +143,12 @@ const AuthenticatedPanelRegistrosRoute =
     path: '/registros',
     getParentRoute: () => AuthenticatedPanelRoute,
   } as any)
+const ApiPublicCronNotificationsRoute =
+  ApiPublicCronNotificationsRouteImport.update({
+    id: '/api/public/cron/notifications',
+    path: '/api/public/cron/notifications',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/panel/': typeof AuthenticatedPanelIndexRoute
+  '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -185,6 +193,7 @@ export interface FileRoutesByTo {
   '/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/panel': typeof AuthenticatedPanelIndexRoute
+  '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -209,6 +218,7 @@ export interface FileRoutesById {
   '/_authenticated/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/_authenticated/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/_authenticated/panel/': typeof AuthenticatedPanelIndexRoute
+  '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -233,6 +243,7 @@ export interface FileRouteTypes {
     | '/panel/locales'
     | '/panel/registros'
     | '/panel/'
+    | '/api/public/cron/notifications'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -254,6 +265,7 @@ export interface FileRouteTypes {
     | '/panel/locales'
     | '/panel/registros'
     | '/panel'
+    | '/api/public/cron/notifications'
   id:
     | '__root__'
     | '/'
@@ -277,6 +289,7 @@ export interface FileRouteTypes {
     | '/_authenticated/panel/locales'
     | '/_authenticated/panel/registros'
     | '/_authenticated/panel/'
+    | '/api/public/cron/notifications'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -292,6 +305,7 @@ export interface RootRouteChildren {
   KioscoTokenRoute: typeof KioscoTokenRoute
   MiTokenRoute: typeof MiTokenRoute
   KioscoIndexRoute: typeof KioscoIndexRoute
+  ApiPublicCronNotificationsRoute: typeof ApiPublicCronNotificationsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -443,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPanelRegistrosRouteImport
       parentRoute: typeof AuthenticatedPanelRoute
     }
+    '/api/public/cron/notifications': {
+      id: '/api/public/cron/notifications'
+      path: '/api/public/cron/notifications'
+      fullPath: '/api/public/cron/notifications'
+      preLoaderRoute: typeof ApiPublicCronNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -495,6 +516,7 @@ const rootRouteChildren: RootRouteChildren = {
   KioscoTokenRoute: KioscoTokenRoute,
   MiTokenRoute: MiTokenRoute,
   KioscoIndexRoute: KioscoIndexRoute,
+  ApiPublicCronNotificationsRoute: ApiPublicCronNotificationsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

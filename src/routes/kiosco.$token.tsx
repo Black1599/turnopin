@@ -112,9 +112,9 @@ function KioscoPage() {
       p_worker_id: selected.id,
       p_pin: pinValue,
       p_action: action,
-      p_reported_time: extra.reported,
       p_no_recall: extra.noRecall ?? false,
-      p_new_pin: extra.newPin,
+      ...(extra.reported ? { p_reported_time: extra.reported } : {}),
+      ...(extra.newPin ? { p_new_pin: extra.newPin } : {}),
     });
     setBusy(false);
     if (error) {

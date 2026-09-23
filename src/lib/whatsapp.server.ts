@@ -9,9 +9,9 @@ import { createHmac, timingSafeEqual } from "crypto";
 export type WhatsAppConfig = {
   phoneNumberId: string;
   accessToken: string;
-  verifyToken?: string;
-  appSecret?: string;
-  businessAccountId?: string;
+  verifyToken: string | undefined;
+  appSecret: string | undefined;
+  businessAccountId: string | undefined;
   apiVersion: string;
 };
 

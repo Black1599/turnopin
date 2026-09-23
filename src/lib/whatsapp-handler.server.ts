@@ -66,7 +66,7 @@ export async function handleIncoming(
   msg: IncomingMessage,
 ) {
   const intent = parseIntent(msg);
-  let ctx: { company_id?: string | null; worker_id?: string | null } = {};
+  let ctx: { company_id?: string | null | undefined; worker_id?: string | null | undefined } = {};
 
   const send = async (text: string, buttons?: Button[]) => {
     if (!provider) return; // credentials absent: nothing is sent, nothing breaks
@@ -137,12 +137,12 @@ export async function handleIncoming(
     if (result.error === "not_linked") return send(UNLINKED_TEXT);
     if (result.error === "location_required" && result.locations?.length && intent.kind === "action") {
       return send(
-        ERROR_TEXT.location_required!,
+        ERROR_TEXT["location_required"]!,
         result.locations.slice(0, 3).map((l) => ({ id: `loc:${intent.action}:${l.id}`, title: l.name })),
       );
     }
-    const buttons = buttonsFor(result.status ?? "out", Boolean(result.break_tracking));
-    if (result.error === "already_working") buttons.splice(0, buttons.length, BUTTON.no_recall, BUTTON.status);
+    const buttons: Button[] = buttonsFor(result.status ?? "out", Boolean(result.break_tracking));
+    if (result.error === "already_working") buttons.splice(0, buttons.length, { ...BUTTON.no_recall }, { ...BUTTON.status });
     return send(ERROR_TEXT[result.error ?? ""] ?? "No se ha podido registrar. Usa el kiosco.", buttons);
   }
 
@@ -157,7 +157,7 @@ export async function handleIncoming(
   return reply(result);
 }
 
-async function logIn(admin: Admin, ctx: { company_id?: string | null; worker_id?: string | null }, kind: string) {
+async function logIn(admin: Admin, ctx: { company_id?: string | null | undefined; worker_id?: string | null | undefined }, kind: string) {
   await admin.from("whatsapp_usage").insert({
     company_id: ctx.company_id ?? null,
     worker_id: ctx.worker_id ?? null,

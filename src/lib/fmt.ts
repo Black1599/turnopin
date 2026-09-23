@@ -30,7 +30,8 @@ export function formatShortDate(value: string | null | undefined) {
   }).format(date);
 }
 
-export function formatDateTime(iso: string) {
+export function formatDateTime(iso: string | null | undefined) {
+  if (!iso) return "—";
   return `${formatShortDate(iso)} ${formatTime(iso)}`;
 }
 

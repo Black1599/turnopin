@@ -7,17 +7,24 @@ import {
   History,
   LayoutDashboard,
   LogOut,
+  MapPin,
   Settings,
+  TriangleAlert,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { companyQueryKey, createCompanyForCurrentUser, useCompany } from "@/lib/company";
+import {
+  companyQueryKey,
+  createCompanyForCurrentUser,
+  useCompany,
+  usePendingIncidents,
+} from "@/lib/company";
 
 export const Route = createFileRoute("/_authenticated/panel")({
   component: PanelLayout,
@@ -25,7 +32,9 @@ export const Route = createFileRoute("/_authenticated/panel")({
 
 const nav = [
   { to: "/panel", label: "Resumen", icon: LayoutDashboard, exact: true },
+  { to: "/panel/incidencias", label: "Incidencias", icon: TriangleAlert },
   { to: "/panel/empleados", label: "Empleados", icon: Users },
+  { to: "/panel/locales", label: "Locales", icon: MapPin },
   { to: "/panel/registros", label: "Registros", icon: FileText },
   { to: "/panel/correcciones", label: "Correcciones", icon: History },
   { to: "/panel/informes", label: "Informes", icon: BarChart3 },
@@ -34,6 +43,7 @@ const nav = [
 
 function PanelLayout() {
   const companyQuery = useCompany();
+  const pending = usePendingIncidents(companyQuery.data?.id).data ?? 0;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -77,12 +87,17 @@ function PanelLayout() {
               >
                 <item.icon className="h-4 w-4" />
                 {item.label}
+                {item.to === "/panel/incidencias" && pending > 0 && (
+                  <span className="ml-auto rounded-full bg-warning px-2 text-xs font-bold text-warning-foreground">
+                    {pending}
+                  </span>
+                )}
               </Link>
             ))}
           </nav>
           <div className="border-t pt-3">
             <div className="truncate px-3 pb-2 text-xs text-muted-foreground">
-              {companyQuery.data.legal_name}
+              {companyQuery.data.commercial_name ?? companyQuery.data.legal_name}
             </div>
             <Button variant="ghost" className="w-full justify-start" onClick={signOut}>
               <LogOut className="mr-2 h-4 w-4" /> Salir
@@ -105,17 +120,20 @@ function PanelLayout() {
         </main>
       </div>
 
-      <nav className="no-print fixed bottom-0 left-0 right-0 z-40 flex border-t bg-background md:hidden">
+      <nav className="no-print fixed bottom-0 left-0 right-0 z-40 flex overflow-x-auto border-t bg-background md:hidden">
         {nav.map((item) => (
           <Link
             key={item.to}
             to={item.to}
             activeOptions={{ exact: "exact" in item ? item.exact : false }}
             activeProps={{ className: "text-primary" }}
-            className="flex flex-1 flex-col items-center gap-1 py-3 text-[11px] text-muted-foreground"
+            className="relative flex min-w-[4.5rem] flex-1 flex-col items-center gap-1 py-3 text-[11px] text-muted-foreground"
           >
             <item.icon className="h-5 w-5" />
             {item.label}
+            {item.to === "/panel/incidencias" && pending > 0 && (
+              <span className="absolute right-3 top-1.5 h-2.5 w-2.5 rounded-full bg-warning" />
+            )}
           </Link>
         ))}
       </nav>
@@ -125,16 +143,33 @@ function PanelLayout() {
 
 function Onboarding() {
   const queryClient = useQueryClient();
-  const [legalName, setLegalName] = useState("");
-  const [taxId, setTaxId] = useState("");
-  const [ccc, setCcc] = useState("");
+  const [f, setF] = useState({
+    legal_name: "",
+    commercial_name: "",
+    tax_id: "",
+    fiscal_address: "",
+    country: "ES",
+    billing_email: "",
+    ccc: "",
+    location_name: "",
+    location_address: "",
+  });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user?.email) setF((p) => (p.billing_email ? p : { ...p, billing_email: data.user!.email! }));
+    });
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     try {
-      await createCompanyForCurrentUser({ legal_name: legalName, tax_id: taxId, ccc });
+      await createCompanyForCurrentUser({
+        ...f,
+        location_name: f.location_name || f.commercial_name || f.legal_name,
+      });
       await queryClient.invalidateQueries({ queryKey: companyQueryKey });
       toast.success("Negocio creado. Tu prueba de 30 días ha empezado.");
     } catch (error) {
@@ -144,32 +179,46 @@ function Onboarding() {
     }
   }
 
+  const field = (key: keyof typeof f, label: string, props: React.ComponentProps<typeof Input> = {}) => (
+    <div className="space-y-2">
+      <Label htmlFor={key}>{label}</Label>
+      <Input
+        id={key}
+        value={f[key]}
+        onChange={(e) => setF({ ...f, [key]: e.target.value })}
+        className="h-11"
+        {...props}
+      />
+    </div>
+  );
+
   return (
     <div className="flex min-h-screen items-start justify-center bg-surface p-5">
-      <form onSubmit={handleSubmit} className="card-soft mt-10 w-full max-w-md space-y-4 p-7">
+      <form onSubmit={handleSubmit} className="card-soft mt-10 w-full max-w-lg space-y-4 p-7">
         <h1 className="text-2xl font-bold">Datos de tu negocio</h1>
         <p className="text-sm text-muted-foreground">
-          Solo lo imprescindible para empezar. Podrás cambiarlo en Ajustes.
+          Los documentos oficiales usan la razón social. El nombre comercial se muestra en el kiosco.
         </p>
-        <div className="space-y-2">
-          <Label htmlFor="legal">Nombre fiscal *</Label>
-          <Input
-            id="legal"
-            required
-            value={legalName}
-            onChange={(e) => setLegalName(e.target.value)}
-            placeholder="Bar La Esquina S.L."
-            className="h-11"
-          />
+        {field("legal_name", "Razón social / nombre fiscal *", { required: true })}
+        {field("tax_id", "NIF / CIF *", { required: true })}
+        {field("fiscal_address", "Dirección fiscal *", { required: true })}
+        <div className="grid gap-4 sm:grid-cols-2">
+          {field("country", "País *", { required: true })}
+          {field("billing_email", "Email de facturación *", { required: true, type: "email" })}
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="tax">CIF / NIF</Label>
-          <Input id="tax" value={taxId} onChange={(e) => setTaxId(e.target.value)} className="h-11" />
+        {field("commercial_name", "Nombre comercial (kiosco)")}
+        {field("ccc", "CCC (opcional)")}
+        <div className="border-t pt-4">
+          <h2 className="font-semibold">Primer local</h2>
+          <div className="mt-3 grid gap-4">
+            {field("location_name", "Nombre del local", { placeholder: "Bar La Esquina" })}
+            {field("location_address", "Dirección del local *", { required: true })}
+          </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="ccc">CCC (opcional)</Label>
-          <Input id="ccc" value={ccc} onChange={(e) => setCcc(e.target.value)} className="h-11" />
-        </div>
+        <p className="text-xs text-muted-foreground">
+          30 días gratis sin tarjeta, una prueba por NIF/CIF. Después, 1 € + IVA por trabajador activo
+          al mes.
+        </p>
         <Button type="submit" className="h-11 w-full" disabled={loading}>
           {loading ? "Creando…" : "Crear negocio"}
         </Button>

@@ -118,7 +118,11 @@ function KioscoPage() {
     });
     setBusy(false);
     if (error) {
-      toast.error("No se ha podido registrar. Inténtalo de nuevo.");
+      toast.error(
+        error.message?.includes("company_read_only")
+          ? "Fichaje no disponible: la cuenta del negocio está en solo lectura. Avisa al responsable."
+          : "No se ha podido registrar. Inténtalo de nuevo.",
+      );
       return;
     }
     const r = data as unknown as Result;

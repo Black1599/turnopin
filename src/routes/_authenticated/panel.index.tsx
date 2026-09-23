@@ -60,7 +60,7 @@ function OverviewPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl font-bold md:text-3xl">Resumen</h1>
-        <p className="mt-1 text-sm capitalize text-muted-foreground">{formatDate(today)}</p>
+        <p className="mt-1 text-sm text-muted-foreground first-letter:uppercase">{formatDate(today)}</p>
       </header>
 
       {company?.subscription_status === "trialing" && !company.is_demo && (

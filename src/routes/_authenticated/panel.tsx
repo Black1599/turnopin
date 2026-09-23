@@ -22,6 +22,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   companyQueryKey,
   createCompanyForCurrentUser,
+  isCompanyWritable,
   useCompany,
   usePendingIncidents,
 } from "@/lib/company";
@@ -115,6 +116,20 @@ function PanelLayout() {
             </Button>
           </div>
           <div className="p-5 md:p-8">
+            {!isCompanyWritable(companyQuery.data) && (
+              <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-warning bg-warning/10 p-4 text-sm">
+                <div className="flex gap-3">
+                  <TriangleAlert className="h-5 w-5 shrink-0 text-warning" />
+                  <p>
+                    <span className="font-semibold">Cuenta en solo lectura.</span> Puedes consultar y descargar todos
+                    los registros, pero no fichar ni hacer cambios hasta añadir un método de pago.
+                  </p>
+                </div>
+                <Button asChild size="sm">
+                  <Link to="/panel/ajustes">Ir a Ajustes</Link>
+                </Button>
+              </div>
+            )}
             <Outlet />
           </div>
         </main>

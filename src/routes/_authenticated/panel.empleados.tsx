@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { KeyRound, Pencil, Plus, RotateCcw, Archive } from "lucide-react";
+import { Archive, KeyRound, Link2, Pencil, Plus, RotateCcw } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -17,11 +18,29 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { logAudit, useCompany, type Worker } from "@/lib/company";
-import { workerName } from "@/lib/fmt";
+import {
+  logAudit,
+  MAX_SELF_SERVICE_WORKERS,
+  rpcErrorMessage,
+  useCompany,
+  useLocations,
+  useWorkers,
+  type Worker,
+} from "@/lib/company";
+import { formatShortDate, workerName } from "@/lib/fmt";
 
 export const Route = createFileRoute("/_authenticated/panel/empleados")({
   component: WorkersPage,
+  head: () => ({
+    meta: [
+      { title: "Trabajadores · TurnoPIN" },
+      { name: "description", content: "Alta, edición, PIN, locales y pausas de tus trabajadores." },
+      { property: "og:title", content: "Trabajadores · TurnoPIN" },
+      { property: "og:description", content: "Gestiona tu equipo sin borrar nunca su historial." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
 });
 
 type FormState = {
@@ -31,7 +50,11 @@ type FormState = {
   dni_nie: string;
   naf: string;
   hired_at: string;
+  ended_at: string;
   pin: string;
+  break_tracking: boolean;
+  break_paid: boolean;
+  locations: string[];
 };
 
 const emptyForm: FormState = {
@@ -41,33 +64,52 @@ const emptyForm: FormState = {
   dni_nie: "",
   naf: "",
   hired_at: "",
+  ended_at: "",
   pin: "",
+  break_tracking: false,
+  break_paid: false,
+  locations: [],
 };
+
+const BILLING_NOTE =
+  "Cada trabajador activo cuenta 1 € + IVA completo en el ciclo mensual en que esté activo (sin prorrateo, máximo una vez por ciclo). Durante la prueba no se cobra.";
 
 function WorkersPage() {
   const { data: company } = useCompany();
   const companyId = company?.id;
-  const queryClient = useQueryClient();
+  const qc = useQueryClient();
+  const { data: workers = [] } = useWorkers(companyId);
+  const { data: locations = [] } = useLocations(companyId);
+  const activeLocations = locations.filter((l) => !l.archived_at);
   const [editing, setEditing] = useState<Worker | null>(null);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [pinTarget, setPinTarget] = useState<Worker | null>(null);
   const [newPin, setNewPin] = useState("");
+  const [linkTarget, setLinkTarget] = useState<Worker | null>(null);
 
-  const workersQuery = useQuery({
-    queryKey: ["workers", companyId],
+  const assignments = useQuery({
+    queryKey: ["worker-locations", companyId],
     enabled: Boolean(companyId),
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("workers")
-        .select("*")
-        .eq("company_id", companyId!)
-        .order("status")
-        .order("first_name");
+        .from("worker_locations")
+        .select("worker_id, location_id")
+        .eq("company_id", companyId!);
       if (error) throw error;
-      return data as Worker[];
+      const map: Record<string, string[]> = {};
+      for (const r of data) (map[r.worker_id] ??= []).push(r.location_id);
+      return map;
     },
   });
+
+  const activeCount = workers.filter((w) => w.status === "active").length;
+  const atLimit = activeCount >= MAX_SELF_SERVICE_WORKERS;
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["workers", companyId] });
+    qc.invalidateQueries({ queryKey: ["worker-locations", companyId] });
+  };
 
   const saveWorker = useMutation({
     mutationFn: async () => {
@@ -75,6 +117,8 @@ function WorkersPage() {
       if (!form.first_name.trim() || !form.last_name.trim())
         throw new Error("Nombre y primer apellido son obligatorios");
       if (form.pin && !/^\d{4}$/.test(form.pin)) throw new Error("El PIN debe tener 4 dígitos");
+      if (!editing && !form.pin) throw new Error("Asigna un PIN inicial de 4 dígitos");
+      if (form.locations.length === 0) throw new Error("Autoriza al menos un local");
 
       const payload = {
         first_name: form.first_name.trim(),
@@ -83,6 +127,9 @@ function WorkersPage() {
         dni_nie: form.dni_nie.trim() || null,
         naf: form.naf.trim() || null,
         hired_at: form.hired_at || null,
+        ended_at: form.ended_at || null,
+        break_tracking: form.break_tracking,
+        break_paid: form.break_paid,
       };
 
       let workerId = editing?.id;
@@ -101,114 +148,152 @@ function WorkersPage() {
         await logAudit(companyId, "create_worker", "worker", data.id, payload);
       }
 
-      if (form.pin && workerId) {
-        const { error } = await supabase.rpc("admin_set_worker_pin", {
-          p_worker_id: workerId,
-          p_pin: form.pin,
-        });
+      const current = assignments.data?.[workerId!] ?? [];
+      const toAdd = form.locations.filter((l) => !current.includes(l));
+      const toRemove = current.filter((l) => !form.locations.includes(l));
+      if (toAdd.length) {
+        const { error } = await supabase
+          .from("worker_locations")
+          .insert(toAdd.map((location_id) => ({ worker_id: workerId!, location_id, company_id: companyId })));
         if (error) throw error;
       }
+      if (toRemove.length) {
+        const { error } = await supabase
+          .from("worker_locations")
+          .delete()
+          .eq("worker_id", workerId!)
+          .in("location_id", toRemove);
+        if (error) throw error;
+      }
+      if (toAdd.length || toRemove.length)
+        await logAudit(companyId, "update_worker_locations", "worker", workerId!, { add: toAdd, remove: toRemove });
+
+      if (form.pin && workerId) {
+        const { error } = await supabase.rpc("admin_set_worker_pin", { p_worker_id: workerId, p_pin: form.pin });
+        if (error) throw error;
+      }
+      return !editing;
     },
-    onSuccess: () => {
-      toast.success(editing ? "Empleado actualizado" : "Empleado creado");
+    onSuccess: (created) => {
+      toast.success(editing ? "Trabajador actualizado" : "Trabajador creado");
+      if (created && activeCount + 1 === MAX_SELF_SERVICE_WORKERS)
+        toast.warning("Has llegado al máximo de 30 trabajadores activos en autoservicio.");
       setOpen(false);
       setEditing(null);
       setForm(emptyForm);
-      queryClient.invalidateQueries({ queryKey: ["workers", companyId] });
+      invalidate();
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "Error al guardar"),
+    onError: (error) => toast.error(rpcErrorMessage(error, "Error al guardar")),
   });
 
   const toggleStatus = useMutation({
     mutationFn: async (worker: Worker) => {
       const archiving = worker.status === "active";
+      const msg = archiving
+        ? "¿Archivar? Su acceso personal y su PIN dejan de funcionar al momento. El historial se conserva. No hay devolución del ciclo en curso; deja de contar desde la siguiente renovación."
+        : "¿Reactivar? Si no se ha contado ya en este ciclo, cuenta 1 € completo en el ciclo actual.";
+      if (!confirm(msg)) return;
       const { error } = await supabase
         .from("workers")
-        .update({
-          status: archiving ? "archived" : "active",
-          archived_at: archiving ? new Date().toISOString() : null,
-        })
+        .update({ status: archiving ? "archived" : "active", archived_at: archiving ? new Date().toISOString() : null })
         .eq("id", worker.id);
       if (error) throw error;
-      await logAudit(
-        worker.company_id,
-        archiving ? "archive_worker" : "reactivate_worker",
-        "worker",
-        worker.id,
-      );
+      await logAudit(worker.company_id, archiving ? "archive_worker" : "reactivate_worker", "worker", worker.id);
     },
-    onSuccess: () => {
-      toast.success("Estado actualizado. El historial se conserva.");
-      queryClient.invalidateQueries({ queryKey: ["workers", companyId] });
-    },
-    onError: () => toast.error("No se ha podido cambiar el estado"),
+    onSuccess: invalidate,
+    onError: (e) => toast.error(rpcErrorMessage(e)),
   });
 
   const setPin = useMutation({
     mutationFn: async () => {
       if (!/^\d{4}$/.test(newPin)) throw new Error("El PIN debe tener 4 dígitos");
-      const { error } = await supabase.rpc("admin_set_worker_pin", {
-        p_worker_id: pinTarget!.id,
-        p_pin: newPin,
-      });
+      const { error } = await supabase.rpc("admin_set_worker_pin", { p_worker_id: pinTarget!.id, p_pin: newPin });
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("PIN guardado. No volverá a mostrarse.");
+      toast.success("PIN restablecido. No volverá a mostrarse.");
       setPinTarget(null);
       setNewPin("");
-      queryClient.invalidateQueries({ queryKey: ["workers", companyId] });
+      invalidate();
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "Error al guardar PIN"),
+    onError: (error) => toast.error(rpcErrorMessage(error)),
   });
 
-  const workers = workersQuery.data ?? [];
+  const rotateLink = useMutation({
+    mutationFn: async (w: Worker) => {
+      const { data, error } = await supabase.rpc("admin_rotate_worker_access", { p_worker_id: w.id });
+      if (error) throw error;
+      return { ...w, access_token: data as string };
+    },
+    onSuccess: (w) => {
+      setLinkTarget(w);
+      toast.success("Enlace renovado. El anterior deja de funcionar.");
+      invalidate();
+    },
+    onError: (e) => toast.error(rpcErrorMessage(e)),
+  });
+
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const locName = (id: string) => locations.find((l) => l.id === id)?.name ?? "";
 
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold md:text-3xl">Empleados</h1>
+          <h1 className="text-2xl font-bold md:text-3xl">Trabajadores</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Los empleados archivados no aparecen en el kiosco, pero conservan su historial.
+            {activeCount} activos de {MAX_SELF_SERVICE_WORKERS} en autoservicio. Los archivados conservan
+            su historial.
           </p>
         </div>
         <Button
           className="h-11"
+          disabled={atLimit}
           onClick={() => {
             setEditing(null);
-            setForm(emptyForm);
+            setForm({ ...emptyForm, locations: activeLocations.length === 1 ? [activeLocations[0]!.id] : [] });
             setOpen(true);
           }}
         >
-          <Plus className="mr-2 h-4 w-4" /> Nuevo empleado
+          <Plus className="mr-2 h-4 w-4" /> Nuevo trabajador
         </Button>
       </header>
 
+      {atLimit && (
+        <div className="rounded-lg border border-warning bg-warning/10 p-4 text-sm">
+          Has llegado a 30 trabajadores activos. Los fichajes siguen funcionando con normalidad. ¿Necesitas
+          más capacidad?{" "}
+          <a className="font-medium underline" href="mailto:soporte@turnopin.es">
+            Contacta con nosotros
+          </a>
+          .
+        </div>
+      )}
+
       {workers.length === 0 ? (
         <div className="card-soft p-10 text-center">
-          <h2 className="font-semibold">Todavía no hay empleados</h2>
+          <h2 className="font-semibold">Todavía no hay trabajadores</h2>
           <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
-            Añade a tu equipo y asigna un PIN de 4 dígitos para que puedan fichar en el kiosco.
+            Añade a tu equipo, autorízalo en su local y asigna un PIN de 4 dígitos.
           </p>
         </div>
       ) : (
         <div className="grid gap-3">
           {workers.map((w) => (
-            <div
-              key={w.id}
-              className="card-soft flex flex-wrap items-center justify-between gap-3 p-4"
-            >
+            <div key={w.id} className="card-soft flex flex-wrap items-center justify-between gap-3 p-4">
               <div className="min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="font-semibold">{workerName(w)}</span>
                   {w.status === "archived" && <Badge variant="secondary">Archivado</Badge>}
-                  {!w.pin_hash && <Badge variant="outline">Sin PIN</Badge>}
+                  {!w.has_pin && <Badge variant="outline">Sin PIN</Badge>}
+                  {w.break_tracking && (
+                    <Badge variant="outline">Pausas {w.break_paid ? "retribuidas" : "no computan"}</Badge>
+                  )}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  {w.dni_nie ? `DNI/NIE ${w.dni_nie} · ` : ""}
-                  {w.naf ? `NAF ${w.naf} · ` : ""}
-                  {w.hired_at ? `Alta ${w.hired_at}` : "Sin fecha de alta"}
+                  {(assignments.data?.[w.id] ?? []).map(locName).join(", ") || "Sin local"}
+                  {w.hired_at ? ` · Alta ${formatShortDate(w.hired_at)}` : ""}
+                  {w.ended_at ? ` · Baja ${formatShortDate(w.ended_at)}` : ""}
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -225,30 +310,28 @@ function WorkersPage() {
                       dni_nie: w.dni_nie ?? "",
                       naf: w.naf ?? "",
                       hired_at: w.hired_at ?? "",
+                      ended_at: w.ended_at ?? "",
                       pin: "",
+                      break_tracking: w.break_tracking,
+                      break_paid: w.break_paid,
+                      locations: assignments.data?.[w.id] ?? [],
                     });
                     setOpen(true);
                   }}
                 >
                   <Pencil className="mr-1 h-4 w-4" /> Editar
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-10"
-                  onClick={() => {
-                    setPinTarget(w);
-                    setNewPin("");
-                  }}
-                >
-                  <KeyRound className="mr-1 h-4 w-4" /> PIN
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-10"
-                  onClick={() => toggleStatus.mutate(w)}
-                >
+                {w.status === "active" && (
+                  <>
+                    <Button variant="outline" size="sm" className="h-10" onClick={() => setPinTarget(w)}>
+                      <KeyRound className="mr-1 h-4 w-4" /> Restablecer PIN
+                    </Button>
+                    <Button variant="outline" size="sm" className="h-10" onClick={() => setLinkTarget(w)}>
+                      <Link2 className="mr-1 h-4 w-4" /> Acceso personal
+                    </Button>
+                  </>
+                )}
+                <Button variant="ghost" size="sm" className="h-10" onClick={() => toggleStatus.mutate(w)}>
                   {w.status === "active" ? (
                     <>
                       <Archive className="mr-1 h-4 w-4" /> Archivar
@@ -268,69 +351,90 @@ function WorkersPage() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editing ? "Editar empleado" : "Nuevo empleado"}</DialogTitle>
+            <DialogTitle>{editing ? "Editar trabajador" : "Nuevo trabajador"}</DialogTitle>
             <DialogDescription>
-              El PIN se guarda cifrado y no puede consultarse después.
+              {editing ? "El PIN se guarda cifrado y no puede consultarse." : BILLING_NOTE}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4">
-            <Field label="Nombre *">
-              <Input
-                value={form.first_name}
-                onChange={(e) => setForm({ ...form, first_name: e.target.value })}
-                className="h-11"
-              />
-            </Field>
-            <Field label="Primer apellido *">
-              <Input
-                value={form.last_name}
-                onChange={(e) => setForm({ ...form, last_name: e.target.value })}
-                className="h-11"
-              />
-            </Field>
-            <Field label="Segundo apellido">
-              <Input
-                value={form.second_last_name}
-                onChange={(e) => setForm({ ...form, second_last_name: e.target.value })}
-                className="h-11"
-              />
-            </Field>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="DNI / NIE">
-                <Input
-                  value={form.dni_nie}
-                  onChange={(e) => setForm({ ...form, dni_nie: e.target.value })}
-                  className="h-11"
-                />
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Field label="Nombre *">
+                <Input value={form.first_name} onChange={(e) => setForm({ ...form, first_name: e.target.value })} className="h-11" />
               </Field>
-              <Field label="NAF">
-                <Input
-                  value={form.naf}
-                  onChange={(e) => setForm({ ...form, naf: e.target.value })}
-                  className="h-11"
-                />
+              <Field label="Primer apellido *">
+                <Input value={form.last_name} onChange={(e) => setForm({ ...form, last_name: e.target.value })} className="h-11" />
+              </Field>
+              <Field label="Segundo apellido">
+                <Input value={form.second_last_name} onChange={(e) => setForm({ ...form, second_last_name: e.target.value })} className="h-11" />
               </Field>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Fecha de alta">
-                <Input
-                  type="date"
-                  value={form.hired_at}
-                  onChange={(e) => setForm({ ...form, hired_at: e.target.value })}
-                  className="h-11"
-                />
+              <Field label="DNI / NIE (opcional)">
+                <Input value={form.dni_nie} onChange={(e) => setForm({ ...form, dni_nie: e.target.value })} className="h-11" />
               </Field>
-              <Field label={editing ? "Nuevo PIN (opcional)" : "PIN de 4 dígitos"}>
-                <Input
-                  inputMode="numeric"
-                  maxLength={4}
-                  value={form.pin}
-                  onChange={(e) =>
-                    setForm({ ...form, pin: e.target.value.replace(/\D/g, "").slice(0, 4) })
-                  }
-                  className="h-11"
-                />
+              <Field label="NAF (opcional)">
+                <Input value={form.naf} onChange={(e) => setForm({ ...form, naf: e.target.value })} className="h-11" />
               </Field>
+              <Field label="Fecha de alta interna">
+                <Input type="date" value={form.hired_at} onChange={(e) => setForm({ ...form, hired_at: e.target.value })} className="h-11" />
+              </Field>
+              <Field label="Fecha de baja interna">
+                <Input type="date" value={form.ended_at} onChange={(e) => setForm({ ...form, ended_at: e.target.value })} className="h-11" />
+              </Field>
+            </div>
+            <Field label={editing ? "Nuevo PIN (opcional)" : "PIN inicial de 4 dígitos *"}>
+              <Input
+                inputMode="numeric"
+                maxLength={4}
+                value={form.pin}
+                onChange={(e) => setForm({ ...form, pin: e.target.value.replace(/\D/g, "").slice(0, 4) })}
+                className="h-11"
+              />
+            </Field>
+            <div className="space-y-2">
+              <Label>Locales autorizados *</Label>
+              <div className="grid gap-2">
+                {activeLocations.map((l) => (
+                  <label key={l.id} className="flex items-center gap-3 rounded-lg border p-3 text-sm">
+                    <input
+                      type="checkbox"
+                      className="h-5 w-5 accent-primary"
+                      checked={form.locations.includes(l.id)}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          locations: e.target.checked
+                            ? [...form.locations, l.id]
+                            : form.locations.filter((x) => x !== l.id),
+                        })
+                      }
+                    />
+                    {l.name}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2 rounded-lg border p-3">
+              <label className="flex items-center gap-3 text-sm font-medium">
+                <input
+                  type="checkbox"
+                  className="h-5 w-5 accent-primary"
+                  checked={form.break_tracking}
+                  onChange={(e) => setForm({ ...form, break_tracking: e.target.checked })}
+                />
+                Registrar pausas en el kiosco
+              </label>
+              {form.break_tracking && (
+                <label className="flex items-center gap-3 pl-8 text-sm">
+                  <input
+                    type="checkbox"
+                    className="h-5 w-5 accent-primary"
+                    checked={form.break_paid}
+                    onChange={(e) => setForm({ ...form, break_paid: e.target.checked })}
+                  />
+                  La pausa computa como tiempo trabajado
+                </label>
+              )}
             </div>
           </div>
           <DialogFooter>
@@ -347,9 +451,10 @@ function WorkersPage() {
       <Dialog open={Boolean(pinTarget)} onOpenChange={(v) => !v && setPinTarget(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>PIN de {pinTarget ? workerName(pinTarget) : ""}</DialogTitle>
+            <DialogTitle>Restablecer PIN de {pinTarget ? workerName(pinTarget) : ""}</DialogTitle>
             <DialogDescription>
-              Escribe 4 dígitos. Comunícaselos al empleado: no podrás volver a verlos.
+              El PIN actual no se puede consultar. Escribe uno nuevo y comunícaselo; podrá cambiarlo en el
+              kiosco.
             </DialogDescription>
           </DialogHeader>
           <Input
@@ -365,6 +470,41 @@ function WorkersPage() {
             </Button>
             <Button onClick={() => setPin.mutate()} disabled={setPin.isPending}>
               Guardar PIN
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={Boolean(linkTarget)} onOpenChange={(v) => !v && setLinkTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Acceso personal de {linkTarget ? workerName(linkTarget) : ""}</DialogTitle>
+            <DialogDescription>
+              Con este enlace y su PIN puede consultar su historial y descargar su PDF mensual. Solo
+              lectura: no permite fichar.
+            </DialogDescription>
+          </DialogHeader>
+          {linkTarget && (
+            <div className="flex flex-col items-center gap-4">
+              <div className="rounded-lg bg-background p-3">
+                <QRCodeSVG value={`${origin}/mi/${linkTarget.access_token}`} size={180} />
+              </div>
+              <div className="break-all text-center font-mono text-xs">
+                {origin}/mi/{linkTarget.access_token}
+              </div>
+            </div>
+          )}
+          <DialogFooter className="gap-2">
+            <Button variant="ghost" onClick={() => linkTarget && rotateLink.mutate(linkTarget)}>
+              Renovar enlace
+            </Button>
+            <Button
+              onClick={() => {
+                void navigator.clipboard.writeText(`${origin}/mi/${linkTarget?.access_token}`);
+                toast.success("Enlace copiado");
+              }}
+            >
+              Copiar enlace
             </Button>
           </DialogFooter>
         </DialogContent>

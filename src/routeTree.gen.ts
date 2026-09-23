@@ -26,6 +26,7 @@ import { Route as AuthenticatedPanelAjustesRouteImport } from './routes/_authent
 import { Route as AuthenticatedPanelCorreccionesRouteImport } from './routes/_authenticated/panel.correcciones'
 import { Route as AuthenticatedPanelEmpleadosRouteImport } from './routes/_authenticated/panel.empleados'
 import { Route as AuthenticatedPanelInformesRouteImport } from './routes/_authenticated/panel.informes'
+import { Route as AuthenticatedPanelLocalesRouteImport } from './routes/_authenticated/panel.locales'
 import { Route as AuthenticatedPanelRegistrosRouteImport } from './routes/_authenticated/panel.registros'
 
 const IndexRoute = IndexRouteImport.update({
@@ -116,6 +117,12 @@ const AuthenticatedPanelInformesRoute =
     path: '/informes',
     getParentRoute: () => AuthenticatedPanelRoute,
   } as any)
+const AuthenticatedPanelLocalesRoute =
+  AuthenticatedPanelLocalesRouteImport.update({
+    id: '/locales',
+    path: '/locales',
+    getParentRoute: () => AuthenticatedPanelRoute,
+  } as any)
 const AuthenticatedPanelRegistrosRoute =
   AuthenticatedPanelRegistrosRouteImport.update({
     id: '/registros',
@@ -139,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
   '/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
   '/panel/informes': typeof AuthenticatedPanelInformesRoute
+  '/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/panel/': typeof AuthenticatedPanelIndexRoute
 }
@@ -157,6 +165,7 @@ export interface FileRoutesByTo {
   '/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
   '/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
   '/panel/informes': typeof AuthenticatedPanelInformesRoute
+  '/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/panel': typeof AuthenticatedPanelIndexRoute
 }
@@ -178,6 +187,7 @@ export interface FileRoutesById {
   '/_authenticated/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
   '/_authenticated/panel/empleados': typeof AuthenticatedPanelEmpleadosRoute
   '/_authenticated/panel/informes': typeof AuthenticatedPanelInformesRoute
+  '/_authenticated/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/_authenticated/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/_authenticated/panel/': typeof AuthenticatedPanelIndexRoute
 }
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/panel/correcciones'
     | '/panel/empleados'
     | '/panel/informes'
+    | '/panel/locales'
     | '/panel/registros'
     | '/panel/'
   fileRoutesByTo: FileRoutesByTo
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/panel/correcciones'
     | '/panel/empleados'
     | '/panel/informes'
+    | '/panel/locales'
     | '/panel/registros'
     | '/panel'
   id:
@@ -237,6 +249,7 @@ export interface FileRouteTypes {
     | '/_authenticated/panel/correcciones'
     | '/_authenticated/panel/empleados'
     | '/_authenticated/panel/informes'
+    | '/_authenticated/panel/locales'
     | '/_authenticated/panel/registros'
     | '/_authenticated/panel/'
   fileRoutesById: FileRoutesById
@@ -376,6 +389,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPanelInformesRouteImport
       parentRoute: typeof AuthenticatedPanelRoute
     }
+    '/_authenticated/panel/locales': {
+      id: '/_authenticated/panel/locales'
+      path: '/locales'
+      fullPath: '/panel/locales'
+      preLoaderRoute: typeof AuthenticatedPanelLocalesRouteImport
+      parentRoute: typeof AuthenticatedPanelRoute
+    }
     '/_authenticated/panel/registros': {
       id: '/_authenticated/panel/registros'
       path: '/registros'
@@ -391,6 +411,7 @@ interface AuthenticatedPanelRouteChildren {
   AuthenticatedPanelCorreccionesRoute: typeof AuthenticatedPanelCorreccionesRoute
   AuthenticatedPanelEmpleadosRoute: typeof AuthenticatedPanelEmpleadosRoute
   AuthenticatedPanelInformesRoute: typeof AuthenticatedPanelInformesRoute
+  AuthenticatedPanelLocalesRoute: typeof AuthenticatedPanelLocalesRoute
   AuthenticatedPanelRegistrosRoute: typeof AuthenticatedPanelRegistrosRoute
   AuthenticatedPanelIndexRoute: typeof AuthenticatedPanelIndexRoute
 }
@@ -400,6 +421,7 @@ const AuthenticatedPanelRouteChildren: AuthenticatedPanelRouteChildren = {
   AuthenticatedPanelCorreccionesRoute: AuthenticatedPanelCorreccionesRoute,
   AuthenticatedPanelEmpleadosRoute: AuthenticatedPanelEmpleadosRoute,
   AuthenticatedPanelInformesRoute: AuthenticatedPanelInformesRoute,
+  AuthenticatedPanelLocalesRoute: AuthenticatedPanelLocalesRoute,
   AuthenticatedPanelRegistrosRoute: AuthenticatedPanelRegistrosRoute,
   AuthenticatedPanelIndexRoute: AuthenticatedPanelIndexRoute,
 }

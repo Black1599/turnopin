@@ -11,8 +11,12 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>) => ({
-    modo: search["modo"] === "registro" ? ("registro" as const) : ("acceso" as const),
+    modo: (search["modo"] === "registro" ? "registro" : "acceso") as
+      | "registro"
+      | "acceso"
+      | undefined,
   }),
+
   head: () => ({
     meta: [
       { title: "Acceso de administración · TurnoPIN" },

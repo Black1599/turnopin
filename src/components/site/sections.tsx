@@ -33,7 +33,13 @@ export function Hero() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 px-7 text-base">
-              <Link to="/kiosco/11111111-1111-1111-1111-111111111111">Ver el kiosco de demo</Link>
+              <Link
+                to="/kiosco/$companyId"
+                params={{ companyId: "11111111-1111-1111-1111-111111111111" }}
+              >
+                Ver el kiosco de demo
+              </Link>
+
             </Button>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">

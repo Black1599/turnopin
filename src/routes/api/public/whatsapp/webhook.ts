@@ -42,6 +42,7 @@ export const Route = createFileRoute("/api/public/whatsapp/webhook")({
         }
         const { supabaseAdmin: admin } = await import("@/integrations/supabase/client.server");
         const { handleIncoming, handleStatus } = await import("@/lib/whatsapp-handler.server");
+        const { minimalMessagePayload } = await import("@/lib/whatsapp-telemetry");
         const provider = getWhatsAppProvider();
 
         for (const entry of body.entry ?? []) {
@@ -59,7 +60,7 @@ export const Route = createFileRoute("/api/public/whatsapp/webhook")({
               if (!rowId) {
                 const { data: ins, error } = await admin
                   .from("whatsapp_webhook_events")
-                  .insert({ dedupe_key: key, kind: "message", payload: m as never })
+                  .insert({ dedupe_key: key, kind: "message", payload: minimalMessagePayload(m) as never })
                   .select("id")
                   .single();
                 if (error) {
@@ -85,7 +86,7 @@ export const Route = createFileRoute("/api/public/whatsapp/webhook")({
               const key = `status:${s.id}:${s.status}`;
               const { error } = await admin
                 .from("whatsapp_webhook_events")
-                .insert({ dedupe_key: key, kind: "status", payload: s as never, processed_at: new Date().toISOString() });
+                .insert({ dedupe_key: key, kind: "status", payload: { id: s.id, status: s.status } as never, processed_at: new Date().toISOString() });
               if (error && error.code !== "23505") return new Response("storage error", { status: 500 });
               if (!error) await handleStatus(admin, s as never);
             }
@@ -94,7 +95,7 @@ export const Route = createFileRoute("/api/public/whatsapp/webhook")({
               await admin.from("whatsapp_webhook_events").insert({
                 dedupe_key: `other:${crypto.randomUUID()}`,
                 kind: change.field ?? "unknown",
-                payload: change as never,
+                payload: { field: change.field ?? null } as never,
                 processed_at: new Date().toISOString(),
               });
             }

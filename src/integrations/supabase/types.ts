@@ -666,6 +666,276 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      whatsapp_message_events: {
+        Row: {
+          billable: boolean | null
+          business_account_id: string | null
+          company_id: string | null
+          counterpart_phone_hash: string | null
+          created_at: string
+          delivered_at: string | null
+          delivery_status: string
+          direction: string
+          event_kind: string
+          failed_at: string | null
+          id: string
+          market: string
+          message_format: string
+          outcome: string | null
+          phone_number_id: string | null
+          pricing_model: string | null
+          provider: string
+          provider_category: string
+          provider_error_code: string | null
+          provider_error_title: string | null
+          provider_message_id: string
+          raw_metadata: Json
+          read_at: string | null
+          reply_to_message_id: string | null
+          sent_at: string | null
+          source_entity_id: string | null
+          source_entity_type: string | null
+          template_name: string | null
+          worker_id: string | null
+        }
+        Insert: {
+          billable?: boolean | null
+          business_account_id?: string | null
+          company_id?: string | null
+          counterpart_phone_hash?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          delivery_status?: string
+          direction: string
+          event_kind: string
+          failed_at?: string | null
+          id?: string
+          market?: string
+          message_format?: string
+          outcome?: string | null
+          phone_number_id?: string | null
+          pricing_model?: string | null
+          provider?: string
+          provider_category?: string
+          provider_error_code?: string | null
+          provider_error_title?: string | null
+          provider_message_id: string
+          raw_metadata?: Json
+          read_at?: string | null
+          reply_to_message_id?: string | null
+          sent_at?: string | null
+          source_entity_id?: string | null
+          source_entity_type?: string | null
+          template_name?: string | null
+          worker_id?: string | null
+        }
+        Update: {
+          billable?: boolean | null
+          business_account_id?: string | null
+          company_id?: string | null
+          counterpart_phone_hash?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          delivery_status?: string
+          direction?: string
+          event_kind?: string
+          failed_at?: string | null
+          id?: string
+          market?: string
+          message_format?: string
+          outcome?: string | null
+          phone_number_id?: string | null
+          pricing_model?: string | null
+          provider?: string
+          provider_category?: string
+          provider_error_code?: string | null
+          provider_error_title?: string | null
+          provider_message_id?: string
+          raw_metadata?: Json
+          read_at?: string | null
+          reply_to_message_id?: string | null
+          sent_at?: string | null
+          source_entity_id?: string | null
+          source_entity_type?: string | null
+          template_name?: string | null
+          worker_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_message_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_message_events_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_rates: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          effective_from: string
+          effective_to: string | null
+          id: string
+          market: string
+          notes: string | null
+          provider: string
+          rule_metadata: Json
+          unit_cost: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          effective_from: string
+          effective_to?: string | null
+          id?: string
+          market?: string
+          notes?: string | null
+          provider?: string
+          rule_metadata?: Json
+          unit_cost: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          market?: string
+          notes?: string | null
+          provider?: string
+          rule_metadata?: Json
+          unit_cost?: number
+        }
+        Relationships: []
+      }
+      whatsapp_reconciliations: {
+        Row: {
+          business_account_id: string | null
+          details: Json
+          id: string
+          internal_currency: string | null
+          internal_estimated_total: number | null
+          internal_messages: number | null
+          period_end: string
+          period_start: string
+          provider_currency: string | null
+          provider_reported_spend: number | null
+          provider_total_messages: number | null
+          reconciled_at: string
+          reconciled_by: string | null
+          status: string
+          variance: number | null
+        }
+        Insert: {
+          business_account_id?: string | null
+          details?: Json
+          id?: string
+          internal_currency?: string | null
+          internal_estimated_total?: number | null
+          internal_messages?: number | null
+          period_end: string
+          period_start: string
+          provider_currency?: string | null
+          provider_reported_spend?: number | null
+          provider_total_messages?: number | null
+          reconciled_at?: string
+          reconciled_by?: string | null
+          status: string
+          variance?: number | null
+        }
+        Update: {
+          business_account_id?: string | null
+          details?: Json
+          id?: string
+          internal_currency?: string | null
+          internal_estimated_total?: number | null
+          internal_messages?: number | null
+          period_end?: string
+          period_start?: string
+          provider_currency?: string | null
+          provider_reported_spend?: number | null
+          provider_total_messages?: number | null
+          reconciled_at?: string
+          reconciled_by?: string | null
+          status?: string
+          variance?: number | null
+        }
+        Relationships: []
+      }
+      whatsapp_status_events: {
+        Row: {
+          billable: boolean | null
+          error_code: string | null
+          error_title: string | null
+          id: string
+          pricing_model: string | null
+          provider_category: string | null
+          provider_message_id: string
+          provider_timestamp: string
+          received_at: string
+          status: string
+        }
+        Insert: {
+          billable?: boolean | null
+          error_code?: string | null
+          error_title?: string | null
+          id?: string
+          pricing_model?: string | null
+          provider_category?: string | null
+          provider_message_id: string
+          provider_timestamp?: string
+          received_at?: string
+          status: string
+        }
+        Update: {
+          billable?: boolean | null
+          error_code?: string | null
+          error_title?: string | null
+          id?: string
+          pricing_model?: string | null
+          provider_category?: string | null
+          provider_message_id?: string
+          provider_timestamp?: string
+          received_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
       whatsapp_usage: {
         Row: {
           billable: boolean | null
@@ -1018,8 +1288,23 @@ export type Database = {
         Args: { p_worker_id: string }
         Returns: undefined
       }
+      company_whatsapp_usage: {
+        Args: { p_company_id: string; p_month: string }
+        Returns: {
+          actions: number
+          messages: number
+          worker_id: string
+        }[]
+      }
       company_writable: { Args: { _company_id: string }; Returns: boolean }
       enqueue_weekly_summaries: { Args: never; Returns: number }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       is_company_member: { Args: { _company_id: string }; Returns: boolean }
       kiosk_action: {
         Args: {
@@ -1106,9 +1391,42 @@ export type Database = {
         }
         Returns: Json
       }
+      whatsapp_apply_statuses: { Args: { p_id: string }; Returns: undefined }
+      whatsapp_dashboard: {
+        Args: { p_company_id?: string; p_from: string; p_to: string }
+        Returns: Json
+      }
+      whatsapp_estimate_cost: {
+        Args: { p_company_id?: string; p_from: string; p_to: string }
+        Returns: Json
+      }
       whatsapp_link: {
         Args: { p_phone: string; p_secret: string }
         Returns: Json
+      }
+      whatsapp_market: { Args: { p_phone: string }; Returns: string }
+      whatsapp_purge_debug_metadata: {
+        Args: { p_older_than?: string }
+        Returns: number
+      }
+      whatsapp_usage_counts: {
+        Args: { p_company_id?: string; p_from: string; p_to: string }
+        Returns: {
+          categories: Json
+          clock_actions: number
+          company_id: string
+          delivered: number
+          failed: number
+          inbound: number
+          incident_error_replies: number
+          interactive: number
+          month: string
+          outbound_attempted: number
+          outbound_sent: number
+          read: number
+          templates: number
+          worker_id: string
+        }[]
       }
       worker_month_records: {
         Args: {
@@ -1142,7 +1460,7 @@ export type Database = {
       worker_status: { Args: { _worker_id: string }; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "platform_admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1269,6 +1587,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["platform_admin"],
+    },
   },
 } as const

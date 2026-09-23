@@ -38,3 +38,24 @@ describe("whatsapp buttonsFor", () => {
     expect(buttonsFor("break", true).map((b) => b.id)).toEqual(["break_end", "status"]);
   });
 });
+
+import { inboundKind, marketOf, minimalMessagePayload } from "./whatsapp-telemetry";
+
+describe("whatsapp telemetry", () => {
+  it("classifies intents", () => {
+    expect(inboundKind({ kind: "link", secret: "1234" })).toBe("linkage");
+    expect(inboundKind({ kind: "action", action: "entry" })).toBe("clock_action");
+    expect(inboundKind({ kind: "action", action: "break_end" })).toBe("break_action");
+    expect(inboundKind({ kind: "action", action: "status" })).toBe("status");
+    expect(inboundKind({ kind: "menu" })).toBe("menu");
+  });
+  it("derives market", () => {
+    expect(marketOf("+34 600 000 000")).toBe("ES");
+    expect(marketOf("351912345678")).toBe("PT");
+    expect(marketOf("999")).toBe("OTHER");
+  });
+  it("never keeps message bodies (PINs)", () => {
+    const p = minimalMessagePayload({ id: "x", type: "text", text: { body: "2580" } });
+    expect(JSON.stringify(p)).not.toContain("2580");
+  });
+});

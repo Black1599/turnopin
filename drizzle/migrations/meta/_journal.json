@@ -78,6 +78,20 @@
       "when": 1790202088646,
       "tag": "0010_whatsapp_clocking_extension",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1790202488036,
+      "tag": "0011_whatsapp_usage_cost_telemetry",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1790202690713,
+      "tag": "0012_whatsapp_telemetry_revoke_public",
+      "breakpoints": true
     }
   ]
 }

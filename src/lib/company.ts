@@ -259,4 +259,3 @@ export async function createCompanyForCurrentUser(input: {
   return company as Company;
 }
 
-/** Sums worked minutes from ordered effective entries; breaks subtract unless paid. */

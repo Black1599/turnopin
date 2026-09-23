@@ -1,0 +1,1 @@
+CREATE POLICY "owner reads own company" ON public.companies FOR SELECT TO authenticated USING (owner_id = auth.uid());

@@ -43,6 +43,13 @@
       "when": 1790196789481,
       "tag": "0005_security_readonly_billing_ledger",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790198034406,
+      "tag": "0006_owner_reads_own_company",
+      "breakpoints": true
     }
   ]
 }

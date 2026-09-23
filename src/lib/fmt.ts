@@ -19,7 +19,8 @@ export function formatDate(value: string) {
   }).format(date);
 }
 
-export function formatShortDate(value: string) {
+export function formatShortDate(value: string | null | undefined) {
+  if (!value) return "—";
   const date = value.length <= 10 ? new Date(`${value}T12:00:00Z`) : new Date(value);
   return new Intl.DateTimeFormat("es-ES", {
     day: "2-digit",

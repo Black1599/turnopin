@@ -32,6 +32,7 @@ import { Route as AuthenticatedPanelLocalesRouteImport } from './routes/_authent
 import { Route as AuthenticatedPanelRegistrosRouteImport } from './routes/_authenticated/panel.registros'
 import { Route as ApiPublicCronNotificationsRouteImport } from './routes/api/public/cron/notifications'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
+import { Route as ApiPublicWhatsappWebhookRouteImport } from './routes/api/public/whatsapp/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -155,6 +156,12 @@ const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   path: '/api/public/stripe/webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWhatsappWebhookRoute =
+  ApiPublicWhatsappWebhookRouteImport.update({
+    id: '/api/public/whatsapp/webhook',
+    path: '/api/public/whatsapp/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -179,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/panel/': typeof AuthenticatedPanelIndexRoute
   '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
+  '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -202,6 +210,7 @@ export interface FileRoutesByTo {
   '/panel': typeof AuthenticatedPanelIndexRoute
   '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
+  '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -228,6 +237,7 @@ export interface FileRoutesById {
   '/_authenticated/panel/': typeof AuthenticatedPanelIndexRoute
   '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
+  '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -254,6 +264,7 @@ export interface FileRouteTypes {
     | '/panel/'
     | '/api/public/cron/notifications'
     | '/api/public/stripe/webhook'
+    | '/api/public/whatsapp/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -277,6 +288,7 @@ export interface FileRouteTypes {
     | '/panel'
     | '/api/public/cron/notifications'
     | '/api/public/stripe/webhook'
+    | '/api/public/whatsapp/webhook'
   id:
     | '__root__'
     | '/'
@@ -302,6 +314,7 @@ export interface FileRouteTypes {
     | '/_authenticated/panel/'
     | '/api/public/cron/notifications'
     | '/api/public/stripe/webhook'
+    | '/api/public/whatsapp/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -319,6 +332,7 @@ export interface RootRouteChildren {
   KioscoIndexRoute: typeof KioscoIndexRoute
   ApiPublicCronNotificationsRoute: typeof ApiPublicCronNotificationsRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
+  ApiPublicWhatsappWebhookRoute: typeof ApiPublicWhatsappWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -484,6 +498,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/whatsapp/webhook': {
+      id: '/api/public/whatsapp/webhook'
+      path: '/api/public/whatsapp/webhook'
+      fullPath: '/api/public/whatsapp/webhook'
+      preLoaderRoute: typeof ApiPublicWhatsappWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -538,6 +559,7 @@ const rootRouteChildren: RootRouteChildren = {
   KioscoIndexRoute: KioscoIndexRoute,
   ApiPublicCronNotificationsRoute: ApiPublicCronNotificationsRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
+  ApiPublicWhatsappWebhookRoute: ApiPublicWhatsappWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

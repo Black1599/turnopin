@@ -595,6 +595,7 @@ export type Database = {
           original_server_timestamp: string | null
           original_work_date: string | null
           server_timestamp: string
+          source: string | null
           type: string
           work_date: string
           worker_id: string
@@ -615,6 +616,7 @@ export type Database = {
           original_server_timestamp?: string | null
           original_work_date?: string | null
           server_timestamp?: string
+          source?: string | null
           type: string
           work_date: string
           worker_id: string
@@ -635,6 +637,7 @@ export type Database = {
           original_server_timestamp?: string | null
           original_work_date?: string | null
           server_timestamp?: string
+          source?: string | null
           type?: string
           work_date?: string
           worker_id?: string
@@ -662,6 +665,99 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      whatsapp_usage: {
+        Row: {
+          billable: boolean | null
+          company_id: string | null
+          created_at: string
+          delivery_status: string | null
+          direction: string
+          error: string | null
+          id: string
+          kind: string
+          pricing_category: string | null
+          pricing_model: string | null
+          updated_at: string
+          wa_message_id: string | null
+          worker_id: string | null
+        }
+        Insert: {
+          billable?: boolean | null
+          company_id?: string | null
+          created_at?: string
+          delivery_status?: string | null
+          direction: string
+          error?: string | null
+          id?: string
+          kind: string
+          pricing_category?: string | null
+          pricing_model?: string | null
+          updated_at?: string
+          wa_message_id?: string | null
+          worker_id?: string | null
+        }
+        Update: {
+          billable?: boolean | null
+          company_id?: string | null
+          created_at?: string
+          delivery_status?: string | null
+          direction?: string
+          error?: string | null
+          id?: string
+          kind?: string
+          pricing_category?: string | null
+          pricing_model?: string | null
+          updated_at?: string
+          wa_message_id?: string | null
+          worker_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_usage_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_usage_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_webhook_events: {
+        Row: {
+          dedupe_key: string
+          id: string
+          kind: string
+          payload: Json
+          processed_at: string | null
+          processing_error: string | null
+          received_at: string
+        }
+        Insert: {
+          dedupe_key: string
+          id?: string
+          kind: string
+          payload: Json
+          processed_at?: string | null
+          processing_error?: string | null
+          received_at?: string
+        }
+        Update: {
+          dedupe_key?: string
+          id?: string
+          kind?: string
+          payload?: Json
+          processed_at?: string | null
+          processing_error?: string | null
+          received_at?: string
+        }
+        Relationships: []
       }
       worker_locations: {
         Row: {
@@ -722,9 +818,16 @@ export type Database = {
           id: string
           last_name: string
           naf: string | null
+          phone: string | null
           pin_hash: string | null
           second_last_name: string | null
           status: string
+          whatsapp_enabled: boolean
+          whatsapp_link_code_expires_at: string | null
+          whatsapp_link_code_hash: string | null
+          whatsapp_link_status: string
+          whatsapp_linked_at: string | null
+          whatsapp_phone_linked: string | null
         }
         Insert: {
           access_token?: string
@@ -741,9 +844,16 @@ export type Database = {
           id?: string
           last_name: string
           naf?: string | null
+          phone?: string | null
           pin_hash?: string | null
           second_last_name?: string | null
           status?: string
+          whatsapp_enabled?: boolean
+          whatsapp_link_code_expires_at?: string | null
+          whatsapp_link_code_hash?: string | null
+          whatsapp_link_status?: string
+          whatsapp_linked_at?: string | null
+          whatsapp_phone_linked?: string | null
         }
         Update: {
           access_token?: string
@@ -760,9 +870,16 @@ export type Database = {
           id?: string
           last_name?: string
           naf?: string | null
+          phone?: string | null
           pin_hash?: string | null
           second_last_name?: string | null
           status?: string
+          whatsapp_enabled?: boolean
+          whatsapp_link_code_expires_at?: string | null
+          whatsapp_link_code_hash?: string | null
+          whatsapp_link_status?: string
+          whatsapp_linked_at?: string | null
+          whatsapp_phone_linked?: string | null
         }
         Relationships: [
           {
@@ -893,6 +1010,14 @@ export type Database = {
         Args: { p_pin: string; p_worker_id: string }
         Returns: undefined
       }
+      admin_whatsapp_link_code: {
+        Args: { p_worker_id: string }
+        Returns: string
+      }
+      admin_whatsapp_unlink: {
+        Args: { p_worker_id: string }
+        Returns: undefined
+      }
       company_writable: { Args: { _company_id: string }; Returns: boolean }
       enqueue_weekly_summaries: { Args: never; Returns: number }
       is_company_member: { Args: { _company_id: string }; Returns: boolean }
@@ -956,9 +1081,34 @@ export type Database = {
       }
       madrid_now: { Args: never; Returns: string }
       normalize_tax_id: { Args: { _t: string }; Returns: string }
+      punch_core: {
+        Args: {
+          p_action: string
+          p_location_id: string
+          p_no_recall: boolean
+          p_reported_time: string
+          p_source: string
+          p_worker: Database["public"]["Tables"]["workers"]["Row"]
+        }
+        Returns: Json
+      }
       record_billable_workers: {
         Args: { _company_id: string }
         Returns: number
+      }
+      whatsapp_action: {
+        Args: {
+          p_action: string
+          p_location_id?: string
+          p_no_recall?: boolean
+          p_phone: string
+          p_reported_time?: string
+        }
+        Returns: Json
+      }
+      whatsapp_link: {
+        Args: { p_phone: string; p_secret: string }
+        Returns: Json
       }
       worker_month_records: {
         Args: {

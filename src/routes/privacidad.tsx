@@ -27,6 +27,14 @@ export const Route = createFileRoute("/privacidad")({
         accede exclusivamente a sus propios datos.
       </p>
       <p>
+        Fichaje por WhatsApp (opcional): si el negocio lo activa y la persona trabajadora acepta
+        usarlo, se trata su número de teléfono y los mensajes de fichaje que envía al número oficial
+        de TurnoPIN, a través de WhatsApp Business Platform de Meta. Solo un número vinculado con su
+        PIN o un código de un solo uso puede fichar. Usar el móvil personal es voluntario: el kiosco
+        del local sigue disponible siempre, y desactivar WhatsApp o cambiar el teléfono desvincula el
+        número al momento. No se usa geolocalización.
+      </p>
+      <p>
         Responsable del tratamiento, plazos de conservación, encargados, base jurídica y ejercicio de
         derechos deben completarse con la información real del negocio antes de publicar.
       </p>

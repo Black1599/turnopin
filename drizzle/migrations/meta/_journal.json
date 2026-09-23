@@ -71,6 +71,13 @@
       "when": 1790199034766,
       "tag": "0009_grant_record_billable_service",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1790202088646,
+      "tag": "0010_whatsapp_clocking_extension",
+      "breakpoints": true
     }
   ]
 }

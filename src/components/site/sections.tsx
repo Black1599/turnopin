@@ -225,6 +225,10 @@ const faqs = [
     a: "No. Se ficha desde la pantalla compartida del local con un PIN de 4 dígitos.",
   },
   {
+    q: "¿Se puede fichar por WhatsApp?",
+    a: "Sí, como opción. El responsable puede activarlo por trabajador; el trabajador vincula su número con su PIN o un código de un solo uso y ficha con botones. Usar el móvil personal es voluntario: el kiosco sigue disponible siempre.",
+  },
+  {
     q: "¿Puedo tener varios turnos al día?",
     a: "Sí, no hay límite de entradas y salidas por día.",
   },

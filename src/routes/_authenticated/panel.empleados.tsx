@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Archive, KeyRound, Link2, Pencil, Plus, RotateCcw } from "lucide-react";
+import { Archive, KeyRound, Link2, MessageCircle, Pencil, Plus, RotateCcw } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -55,6 +55,8 @@ type FormState = {
   break_tracking: boolean;
   break_paid: boolean;
   locations: string[];
+  phone: string;
+  whatsapp_enabled: boolean;
 };
 
 const emptyForm: FormState = {
@@ -69,6 +71,8 @@ const emptyForm: FormState = {
   break_tracking: false,
   break_paid: false,
   locations: [],
+  phone: "",
+  whatsapp_enabled: false,
 };
 
 const BILLING_NOTE =
@@ -87,6 +91,8 @@ function WorkersPage() {
   const [pinTarget, setPinTarget] = useState<Worker | null>(null);
   const [newPin, setNewPin] = useState("");
   const [linkTarget, setLinkTarget] = useState<Worker | null>(null);
+  const [waTarget, setWaTarget] = useState<Worker | null>(null);
+  const [waCode, setWaCode] = useState<string | null>(null);
 
   const assignments = useQuery({
     queryKey: ["worker-locations", companyId],
@@ -119,6 +125,10 @@ function WorkersPage() {
       if (form.pin && !/^\d{4}$/.test(form.pin)) throw new Error("El PIN debe tener 4 dígitos");
       if (!editing && !form.pin) throw new Error("Asigna un PIN inicial de 4 dígitos");
       if (form.locations.length === 0) throw new Error("Autoriza al menos un local");
+      const phone = form.phone.replace(/[\s-]/g, "");
+      if (phone && !/^\+?\d{8,15}$/.test(phone))
+        throw new Error("Teléfono no válido. Usa el formato internacional, p. ej. +34600111222");
+      if (form.whatsapp_enabled && !phone) throw new Error("Para usar WhatsApp indica su teléfono");
 
       const payload = {
         first_name: form.first_name.trim(),
@@ -130,6 +140,8 @@ function WorkersPage() {
         ended_at: form.ended_at || null,
         break_tracking: form.break_tracking,
         break_paid: form.break_paid,
+        phone: phone ? (phone.startsWith("+") ? phone : `+34${phone}`) : null,
+        whatsapp_enabled: form.whatsapp_enabled,
       };
 
       let workerId = editing?.id;
@@ -233,6 +245,32 @@ function WorkersPage() {
     onError: (e) => toast.error(rpcErrorMessage(e)),
   });
 
+  const genCode = useMutation({
+    mutationFn: async (w: Worker) => {
+      const { data, error } = await supabase.rpc("admin_whatsapp_link_code", { p_worker_id: w.id });
+      if (error) throw error;
+      return data as string;
+    },
+    onSuccess: (code) => {
+      setWaCode(code);
+      invalidate();
+    },
+    onError: (e) => toast.error(rpcErrorMessage(e)),
+  });
+
+  const unlinkWa = useMutation({
+    mutationFn: async (w: Worker) => {
+      const { error } = await supabase.rpc("admin_whatsapp_unlink", { p_worker_id: w.id });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("WhatsApp desvinculado. Ese número ya no puede fichar.");
+      setWaTarget(null);
+      invalidate();
+    },
+    onError: (e) => toast.error(rpcErrorMessage(e)),
+  });
+
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const locName = (id: string) => locations.find((l) => l.id === id)?.name ?? "";
 
@@ -286,6 +324,11 @@ function WorkersPage() {
                   <span className="font-semibold">{workerName(w)}</span>
                   {w.status === "archived" && <Badge variant="secondary">Archivado</Badge>}
                   {!w.has_pin && <Badge variant="outline">Sin PIN</Badge>}
+                  {w.whatsapp_enabled && (
+                    <Badge variant="outline">
+                      WhatsApp {w.whatsapp_link_status === "linked" ? "vinculado" : "pendiente"}
+                    </Badge>
+                  )}
                   {w.break_tracking && (
                     <Badge variant="outline">Pausas {w.break_paid ? "retribuidas" : "no computan"}</Badge>
                   )}
@@ -315,6 +358,8 @@ function WorkersPage() {
                       break_tracking: w.break_tracking,
                       break_paid: w.break_paid,
                       locations: assignments.data?.[w.id] ?? [],
+                      phone: w.phone ?? "",
+                      whatsapp_enabled: w.whatsapp_enabled,
                     });
                     setOpen(true);
                   }}
@@ -329,6 +374,19 @@ function WorkersPage() {
                     <Button variant="outline" size="sm" className="h-10" onClick={() => setLinkTarget(w)}>
                       <Link2 className="mr-1 h-4 w-4" /> Acceso personal
                     </Button>
+                    {w.whatsapp_enabled && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-10"
+                        onClick={() => {
+                          setWaCode(null);
+                          setWaTarget(w);
+                        }}
+                      >
+                        <MessageCircle className="mr-1 h-4 w-4" /> WhatsApp
+                      </Button>
+                    )}
                   </>
                 )}
                 <Button variant="ghost" size="sm" className="h-10" onClick={() => toggleStatus.mutate(w)}>
@@ -436,6 +494,31 @@ function WorkersPage() {
                 </label>
               )}
             </div>
+            <div className="space-y-3 rounded-lg border p-3">
+              <label className="flex items-center gap-3 text-sm font-medium">
+                <input
+                  type="checkbox"
+                  className="h-5 w-5 accent-primary"
+                  checked={form.whatsapp_enabled}
+                  onChange={(e) => setForm({ ...form, whatsapp_enabled: e.target.checked })}
+                />
+                Permitir fichar también por WhatsApp (opcional)
+              </label>
+              <Field label={form.whatsapp_enabled ? "Teléfono móvil *" : "Teléfono móvil (opcional)"}>
+                <Input
+                  type="tel"
+                  inputMode="tel"
+                  placeholder="+34 600 111 222"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  className="h-11"
+                />
+              </Field>
+              <p className="text-xs text-muted-foreground">
+                Usar su móvil personal es voluntario: el kiosco sigue disponible siempre. Cambiar el teléfono o
+                desactivar WhatsApp desvincula el número al momento.
+              </p>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
@@ -470,6 +553,53 @@ function WorkersPage() {
             </Button>
             <Button onClick={() => setPin.mutate()} disabled={setPin.isPending}>
               Guardar PIN
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={Boolean(waTarget)} onOpenChange={(v) => !v && setWaTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>WhatsApp de {waTarget ? workerName(waTarget) : ""}</DialogTitle>
+            <DialogDescription>
+              Opcional. El kiosco sigue disponible. Solo un número vinculado puede fichar; cualquier otro número
+              se ignora.
+            </DialogDescription>
+          </DialogHeader>
+          {waTarget && (
+            <div className="space-y-3 text-sm">
+              <div>
+                Teléfono: <span className="font-mono">{waTarget.phone}</span>
+              </div>
+              <div>
+                Estado:{" "}
+                {waTarget.whatsapp_link_status === "linked"
+                  ? `Vinculado el ${formatShortDate(waTarget.whatsapp_linked_at)}`
+                  : waTarget.whatsapp_link_status === "pending"
+                    ? "Pendiente de vincular"
+                    : "Sin vincular"}
+              </div>
+              {waCode ? (
+                <div className="rounded-lg border p-3 text-center">
+                  <div className="text-xs text-muted-foreground">Código de un solo uso (24 h). No volverá a mostrarse.</div>
+                  <div className="mt-1 font-mono text-3xl tracking-[0.3em]">{waCode}</div>
+                </div>
+              ) : null}
+              <p className="text-muted-foreground">
+                Para vincular, el trabajador escribe desde ese teléfono al WhatsApp de TurnoPIN y envía el código de 6
+                cifras (o su PIN de 4 cifras). Después verá los botones Entrar, Pausa, Salir y Ver estado.
+              </p>
+            </div>
+          )}
+          <DialogFooter className="gap-2">
+            {waTarget?.whatsapp_link_status === "linked" && (
+              <Button variant="ghost" onClick={() => unlinkWa.mutate(waTarget)} disabled={unlinkWa.isPending}>
+                Desvincular
+              </Button>
+            )}
+            <Button onClick={() => waTarget && genCode.mutate(waTarget)} disabled={genCode.isPending}>
+              Generar código
             </Button>
           </DialogFooter>
         </DialogContent>

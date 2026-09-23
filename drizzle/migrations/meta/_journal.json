@@ -50,6 +50,13 @@
       "when": 1790198034406,
       "tag": "0006_owner_reads_own_company",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790198137158,
+      "tag": "0007_kiosk_block_plain_double_entry",
+      "breakpoints": true
     }
   ]
 }

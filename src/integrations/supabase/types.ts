@@ -673,6 +673,7 @@ export type Database = {
           dni_nie: string | null
           ended_at: string | null
           first_name: string
+          has_pin: boolean | null
           hired_at: string | null
           id: string
           last_name: string
@@ -691,6 +692,7 @@ export type Database = {
           dni_nie?: string | null
           ended_at?: string | null
           first_name: string
+          has_pin?: boolean | null
           hired_at?: string | null
           id?: string
           last_name: string
@@ -709,6 +711,7 @@ export type Database = {
           dni_nie?: string | null
           ended_at?: string | null
           first_name?: string
+          has_pin?: boolean | null
           hired_at?: string | null
           id?: string
           last_name?: string

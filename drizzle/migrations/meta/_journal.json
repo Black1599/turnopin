@@ -29,6 +29,13 @@
       "when": 1790196106394,
       "tag": "0003_locations_immutable_events_incidents_v2",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790196120378,
+      "tag": "0004_workers_hide_pin_hash",
+      "breakpoints": true
     }
   ]
 }

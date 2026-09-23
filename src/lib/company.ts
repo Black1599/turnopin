@@ -48,10 +48,14 @@ export type Worker = {
   break_tracking: boolean;
   break_paid: boolean;
   created_at: string;
+  phone: string | null;
+  whatsapp_enabled: boolean;
+  whatsapp_link_status: string;
+  whatsapp_linked_at: string | null;
 };
 
 export const WORKER_COLUMNS =
-  "id, company_id, first_name, last_name, second_last_name, dni_nie, naf, status, hired_at, ended_at, archived_at, has_pin, access_token, break_tracking, break_paid, created_at";
+  "id, company_id, first_name, last_name, second_last_name, dni_nie, naf, status, hired_at, ended_at, archived_at, has_pin, access_token, break_tracking, break_paid, created_at, phone, whatsapp_enabled, whatsapp_link_status, whatsapp_linked_at";
 
 export type Location = {
   id: string;
@@ -205,6 +209,8 @@ export function rpcErrorMessage(error: unknown, fallback = "No se ha podido comp
     company_read_only:
       "La cuenta está en solo lectura (prueba terminada o suscripción cancelada). Añade un método de pago en Ajustes.",
     companies_tax_id_unique: "Ya existe una cuenta o prueba con este NIF/CIF. Escríbenos a soporte@turnopin.es.",
+    whatsapp_not_enabled: "Activa WhatsApp y guarda un teléfono antes de generar el código.",
+    worker_archived: "El trabajador está archivado.",
   };
   for (const key of Object.keys(map)) if (msg.includes(key)) return map[key]!;
   return msg || fallback;

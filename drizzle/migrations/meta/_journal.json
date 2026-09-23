@@ -15,6 +15,13 @@
       "when": 1790055512442,
       "tag": "0001_preserve_original_timestamps",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790148780297,
+      "tag": "0002_breaks_incidents_worker_access",
+      "breakpoints": true
     }
   ]
 }

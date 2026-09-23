@@ -67,7 +67,7 @@ function SettingsPage() {
     setSaving(true);
     try {
       const payload = Object.fromEntries(FIELDS.map(([k, , req]) => [k, req ? form[k].trim() : form[k].trim() || null]));
-      const { error } = await supabase.from("companies").update(payload).eq("id", company.id);
+      const { error } = await supabase.from("companies").update(payload as never).eq("id", company.id);
       if (error) throw error;
       await logAudit(company.id, "update_company", "company", company.id, payload);
       await qc.invalidateQueries({ queryKey: companyQueryKey });

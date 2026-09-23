@@ -22,7 +22,7 @@ import { formatDateTime, formatShortDate, madridToIso, workerShortName } from "@
 
 export const Route = createFileRoute("/_authenticated/panel/incidencias")({
   validateSearch: (s: Record<string, unknown>): { id?: string } =>
-    typeof s.id === "string" ? { id: s.id } : {},
+    typeof s["id"] === "string" ? { id: s["id"] } : {},
   component: IncidentsPage,
   head: () => ({
     meta: [

@@ -21,6 +21,7 @@ import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as AuthenticatedPanelRouteImport } from './routes/_authenticated/panel'
 import { Route as KioscoIndexRouteImport } from './routes/kiosco.index'
 import { Route as KioscoTokenRouteImport } from './routes/kiosco.$token'
+import { Route as MiTokenRouteImport } from './routes/mi.$token'
 import { Route as AuthenticatedPanelIndexRouteImport } from './routes/_authenticated/panel.index'
 import { Route as AuthenticatedPanelAjustesRouteImport } from './routes/_authenticated/panel.ajustes'
 import { Route as AuthenticatedPanelCorreccionesRouteImport } from './routes/_authenticated/panel.correcciones'
@@ -29,6 +30,7 @@ import { Route as AuthenticatedPanelIncidenciasRouteImport } from './routes/_aut
 import { Route as AuthenticatedPanelInformesRouteImport } from './routes/_authenticated/panel.informes'
 import { Route as AuthenticatedPanelLocalesRouteImport } from './routes/_authenticated/panel.locales'
 import { Route as AuthenticatedPanelRegistrosRouteImport } from './routes/_authenticated/panel.registros'
+import { Route as ApiPublicCronNotificationsRouteImport } from './routes/api/public/cron/notifications'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -89,6 +91,11 @@ const KioscoTokenRoute = KioscoTokenRouteImport.update({
   path: '/kiosco/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MiTokenRoute = MiTokenRouteImport.update({
+  id: '/mi/$token',
+  path: '/mi/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedPanelIndexRoute = AuthenticatedPanelIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -136,6 +143,12 @@ const AuthenticatedPanelRegistrosRoute =
     path: '/registros',
     getParentRoute: () => AuthenticatedPanelRoute,
   } as any)
+const ApiPublicCronNotificationsRoute =
+  ApiPublicCronNotificationsRouteImport.update({
+    id: '/api/public/cron/notifications',
+    path: '/api/public/cron/notifications',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -148,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/terminos': typeof TerminosRoute
   '/panel': typeof AuthenticatedPanelRouteWithChildren
   '/kiosco/$token': typeof KioscoTokenRoute
+  '/mi/$token': typeof MiTokenRoute
   '/kiosco/': typeof KioscoIndexRoute
   '/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
   '/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
@@ -157,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/panel/': typeof AuthenticatedPanelIndexRoute
+  '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -168,6 +183,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
   '/kiosco/$token': typeof KioscoTokenRoute
+  '/mi/$token': typeof MiTokenRoute
   '/kiosco': typeof KioscoIndexRoute
   '/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
   '/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
@@ -177,6 +193,7 @@ export interface FileRoutesByTo {
   '/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/panel': typeof AuthenticatedPanelIndexRoute
+  '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -191,6 +208,7 @@ export interface FileRoutesById {
   '/terminos': typeof TerminosRoute
   '/_authenticated/panel': typeof AuthenticatedPanelRouteWithChildren
   '/kiosco/$token': typeof KioscoTokenRoute
+  '/mi/$token': typeof MiTokenRoute
   '/kiosco/': typeof KioscoIndexRoute
   '/_authenticated/panel/ajustes': typeof AuthenticatedPanelAjustesRoute
   '/_authenticated/panel/correcciones': typeof AuthenticatedPanelCorreccionesRoute
@@ -200,6 +218,7 @@ export interface FileRoutesById {
   '/_authenticated/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/_authenticated/panel/registros': typeof AuthenticatedPanelRegistrosRoute
   '/_authenticated/panel/': typeof AuthenticatedPanelIndexRoute
+  '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -214,6 +233,7 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/panel'
     | '/kiosco/$token'
+    | '/mi/$token'
     | '/kiosco/'
     | '/panel/ajustes'
     | '/panel/correcciones'
@@ -223,6 +243,7 @@ export interface FileRouteTypes {
     | '/panel/locales'
     | '/panel/registros'
     | '/panel/'
+    | '/api/public/cron/notifications'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -234,6 +255,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/terminos'
     | '/kiosco/$token'
+    | '/mi/$token'
     | '/kiosco'
     | '/panel/ajustes'
     | '/panel/correcciones'
@@ -243,6 +265,7 @@ export interface FileRouteTypes {
     | '/panel/locales'
     | '/panel/registros'
     | '/panel'
+    | '/api/public/cron/notifications'
   id:
     | '__root__'
     | '/'
@@ -256,6 +279,7 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/_authenticated/panel'
     | '/kiosco/$token'
+    | '/mi/$token'
     | '/kiosco/'
     | '/_authenticated/panel/ajustes'
     | '/_authenticated/panel/correcciones'
@@ -265,6 +289,7 @@ export interface FileRouteTypes {
     | '/_authenticated/panel/locales'
     | '/_authenticated/panel/registros'
     | '/_authenticated/panel/'
+    | '/api/public/cron/notifications'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -278,7 +303,9 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TerminosRoute: typeof TerminosRoute
   KioscoTokenRoute: typeof KioscoTokenRoute
+  MiTokenRoute: typeof MiTokenRoute
   KioscoIndexRoute: typeof KioscoIndexRoute
+  ApiPublicCronNotificationsRoute: typeof ApiPublicCronNotificationsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -367,6 +394,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KioscoTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mi/$token': {
+      id: '/mi/$token'
+      path: '/mi/$token'
+      fullPath: '/mi/$token'
+      preLoaderRoute: typeof MiTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/panel/': {
       id: '/_authenticated/panel/'
       path: '/'
@@ -423,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPanelRegistrosRouteImport
       parentRoute: typeof AuthenticatedPanelRoute
     }
+    '/api/public/cron/notifications': {
+      id: '/api/public/cron/notifications'
+      path: '/api/public/cron/notifications'
+      fullPath: '/api/public/cron/notifications'
+      preLoaderRoute: typeof ApiPublicCronNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -473,7 +514,9 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TerminosRoute: TerminosRoute,
   KioscoTokenRoute: KioscoTokenRoute,
+  MiTokenRoute: MiTokenRoute,
   KioscoIndexRoute: KioscoIndexRoute,
+  ApiPublicCronNotificationsRoute: ApiPublicCronNotificationsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

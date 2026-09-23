@@ -79,6 +79,24 @@ function WorkerPortal() {
   }
 
   const locName = useCallback((id: string | null) => id ?? "", []);
+  const [pinMsg, setPinMsg] = useState("");
+
+  async function changePin() {
+    const next = window.prompt("Nuevo PIN de 4 cifras");
+    if (next === null) return;
+    if (!/^\d{4}$/.test(next)) return setPinMsg("El PIN debe tener 4 cifras.");
+    if (window.prompt("Repite el nuevo PIN") !== next) return setPinMsg("Los PIN no coinciden.");
+    const { data: res } = await supabase.rpc("worker_portal_change_pin", {
+      p_access_token: token,
+      p_pin: pin,
+      p_new_pin: next,
+    });
+    const r = res as { ok?: boolean; error?: string } | null;
+    if (r?.ok) {
+      setPin(next);
+      setPinMsg("PIN cambiado. Úsalo a partir de ahora en el kiosco.");
+    } else setPinMsg(ERR[r?.error ?? ""] ?? "No se ha podido cambiar el PIN.");
+  }
 
   if (!data) {
     return (
@@ -167,11 +185,15 @@ function WorkerPortal() {
           <Button onClick={() => window.print()}>
             <Printer className="mr-1 h-4 w-4" /> PDF
           </Button>
+          <Button variant="outline" onClick={() => void changePin()}>
+            Cambiar PIN
+          </Button>
           <Button variant="ghost" onClick={() => (setData(null), setPin(""))}>
             Salir
           </Button>
         </div>
       </div>
+      {pinMsg && <div className="no-print bg-accent px-5 py-2 text-center text-sm">{pinMsg}</div>}
       <div className="mx-auto max-w-3xl p-5">
         <div className="card-soft p-5 md:p-8">
           <MonthlyReport

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { ENTRY_LABEL, effectiveMinutes, type EffectiveEntry } from "@/lib/company";
+import { ENTRY_LABEL, type EffectiveEntry } from "@/lib/company";
+import { buildShifts, countIncomplete, sumWorked } from "@/lib/shifts";
 import { formatDateTime, formatMinutes, formatShortDate, monthLabel } from "@/lib/fmt";
 
 export type ReportWorker = {
@@ -67,6 +68,7 @@ export function MonthlyReport({
   }, [company, month, workers, entries, locName]);
 
   let companyTotal = 0;
+  let companyIncomplete = 0;
 
   return (
     <div className="print-area space-y-8 bg-background">
@@ -81,9 +83,14 @@ export function MonthlyReport({
 
       {workers.map((w) => {
         const list = entries.filter((e) => e.worker_id === w.id);
-        const days = Array.from(new Set(list.map((e) => e.effective_work_date))).sort();
-        const total = effectiveMinutes(list, w.break_paid);
+        const shifts = buildShifts(list, w.break_paid);
+        const days = Array.from(
+          new Set([...list.map((e) => e.effective_work_date), ...shifts.map((s) => s.workDate)]),
+        ).sort();
+        const total = sumWorked(shifts);
+        const incomplete = countIncomplete(shifts);
         companyTotal += total;
+        companyIncomplete += incomplete;
         const locs = Array.from(new Set(list.map((e) => e.effective_location_id)));
         return (
           <section key={w.id} className="break-inside-avoid space-y-3">
@@ -94,12 +101,19 @@ export function MonthlyReport({
                   {w.dni_nie ? `DNI/NIE ${w.dni_nie}` : ""} {w.naf ? `· NAF ${w.naf}` : ""}
                 </span>
               </h3>
-              <span className="text-sm font-semibold">Total: {formatMinutes(total)}</span>
+              <span className="text-sm font-semibold">
+                Total: {formatMinutes(total)}
+                {incomplete > 0 && (
+                  <span className="ml-1 font-normal text-destructive">
+                    + {incomplete} turno{incomplete > 1 ? "s" : ""} sin salida (duración no calculada)
+                  </span>
+                )}
+              </span>
             </div>
             {byLocation && locs.length > 0 && (
               <div className="text-xs text-muted-foreground">
                 {locs
-                  .map((l) => `${locName(l)}: ${formatMinutes(effectiveMinutes(list.filter((e) => e.effective_location_id === l), w.break_paid))}`)
+                  .map((l) => `${locName(l)}: ${formatMinutes(sumWorked(shifts.filter((s) => s.locationId === l)))}`)
                   .join(" · ")}
               </div>
             )}
@@ -117,6 +131,8 @@ export function MonthlyReport({
                 <tbody>
                   {days.map((d) => {
                     const dayList = list.filter((e) => e.effective_work_date === d);
+                    const dayShifts = shifts.filter((s) => s.workDate === d);
+                    const dayIncomplete = countIncomplete(dayShifts);
                     return (
                       <tr key={d} className="border-b align-top">
                         <td className="py-1.5 pr-3 tabular-nums">{formatShortDate(d)}</td>
@@ -141,7 +157,10 @@ export function MonthlyReport({
                           ))}
                         </td>
                         <td className="py-1.5 text-right tabular-nums">
-                          {formatMinutes(effectiveMinutes(dayList, w.break_paid))}
+                          {dayShifts.length === 0 ? "—" : formatMinutes(sumWorked(dayShifts))}
+                          {dayIncomplete > 0 && (
+                            <div className="text-xs text-destructive">Sin salida · incompleto</div>
+                          )}
                         </td>
                       </tr>
                     );
@@ -154,12 +173,18 @@ export function MonthlyReport({
       })}
 
       {workers.length > 1 && (
-        <div className="border-t pt-3 text-right font-semibold">Total empresa: {formatMinutes(companyTotal)}</div>
+        <div className="border-t pt-3 text-right font-semibold">
+          Total empresa: {formatMinutes(companyTotal)}
+          {companyIncomplete > 0 && (
+            <span className="ml-1 font-normal text-destructive">+ {companyIncomplete} turno(s) sin salida</span>
+          )}
+        </div>
       )}
 
       <footer className="border-t pt-3 text-[11px] text-muted-foreground">
         Generado con TurnoPIN el {formatDateTime(new Date().toISOString())} (hora de Madrid). Export {exportId} ·
-        SHA-256 {hash.slice(0, 32)}… Los horarios se muestran en Europe/Madrid; los originales se conservan en UTC.
+        SHA-256 {hash.slice(0, 32)}… Los horarios se muestran en Europe/Madrid; los originales se conservan en UTC. Un turno que cruza
+        medianoche se asigna al día de su entrada. Los turnos sin salida no suman horas: TurnoPIN no inventa horas.
         Este documento refleja la base de datos en el momento de generarlo; la base de datos es la fuente de verdad.
       </footer>
     </div>

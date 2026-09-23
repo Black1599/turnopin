@@ -259,22 +259,3 @@ export async function createCompanyForCurrentUser(input: {
   return company as Company;
 }
 
-/** Sums worked minutes from ordered effective entries; breaks subtract unless paid. */
-export function effectiveMinutes(entries: EffectiveEntry[], breakPaid: boolean) {
-  let total = 0;
-  let open: number | null = null;
-  let breakOpen: number | null = null;
-  for (const e of entries) {
-    const t = new Date(e.effective_timestamp).getTime();
-    if (e.type === "entry") open = t;
-    else if (e.type === "exit" && open !== null) {
-      total += (t - open) / 60000;
-      open = null;
-    } else if (e.type === "break_start") breakOpen = t;
-    else if (e.type === "break_end" && breakOpen !== null) {
-      if (!breakPaid) total -= (t - breakOpen) / 60000;
-      breakOpen = null;
-    }
-  }
-  return Math.max(0, Math.round(total));
-}

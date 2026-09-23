@@ -119,6 +119,7 @@ export type Database = {
           stripe_subscription_id: string | null
           subscription_status: string
           tax_id: string | null
+          trial_denied: boolean
           trial_ends_at: string
         }
         Insert: {
@@ -142,6 +143,7 @@ export type Database = {
           stripe_subscription_id?: string | null
           subscription_status?: string
           tax_id?: string | null
+          trial_denied?: boolean
           trial_ends_at?: string
         }
         Update: {
@@ -165,6 +167,7 @@ export type Database = {
           stripe_subscription_id?: string | null
           subscription_status?: string
           tax_id?: string | null
+          trial_denied?: boolean
           trial_ends_at?: string
         }
         Relationships: []
@@ -952,6 +955,7 @@ export type Database = {
         }[]
       }
       madrid_now: { Args: never; Returns: string }
+      normalize_tax_id: { Args: { _t: string }; Returns: string }
       record_billable_workers: {
         Args: { _company_id: string }
         Returns: number

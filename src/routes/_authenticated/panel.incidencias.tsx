@@ -47,6 +47,7 @@ type Incident = {
   worker_no_recall: boolean;
   resolution_notes: string | null;
   resolved_at: string | null;
+  resolution_entry_id: string | null;
   created_at: string;
   time_entries: { server_timestamp: string; local_time: string } | null;
 };
@@ -158,6 +159,9 @@ function IncidentsPage() {
                   <Badge variant={i.status === "pending" ? "destructive" : "secondary"}>
                     {i.status === "pending" ? "Pendiente" : "Resuelta"}
                   </Badge>
+                  {i.status === "resolved" && !i.resolution_entry_id && (
+                    <Badge variant="outline">Cerrada sin salida · turno sin duración</Badge>
+                  )}
                 </div>
                 <div className="mt-1 text-muted-foreground">
                   Entrada {i.work_date ? formatShortDate(i.work_date) : ""} {i.time_entries?.local_time}
@@ -197,6 +201,12 @@ function IncidentsPage() {
               <input type="checkbox" className="h-5 w-5 accent-primary" checked={noExit} onChange={(e) => setNoExit(e.target.checked)} />
               Cerrar sin añadir salida (por ejemplo, entrada errónea que corregirás aparte)
             </label>
+            {noExit && (
+              <p className="rounded-md border bg-muted p-3 text-xs text-muted-foreground">
+                El turno seguirá sin salida: en registros e informes aparecerá como «sin salida ·
+                incompleto» y no sumará horas. TurnoPIN no inventa horas.
+              </p>
+            )}
             {!noExit && (
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">

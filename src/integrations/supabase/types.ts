@@ -102,10 +102,12 @@ export type Database = {
           billing_cycle_end: string | null
           billing_cycle_start: string | null
           billing_email: string | null
+          canceled_at: string | null
           ccc: string | null
           commercial_name: string | null
           country: string
           created_at: string
+          current_period_end: string | null
           fiscal_address: string | null
           id: string
           is_demo: boolean
@@ -123,10 +125,12 @@ export type Database = {
           billing_cycle_end?: string | null
           billing_cycle_start?: string | null
           billing_email?: string | null
+          canceled_at?: string | null
           ccc?: string | null
           commercial_name?: string | null
           country?: string
           created_at?: string
+          current_period_end?: string | null
           fiscal_address?: string | null
           id?: string
           is_demo?: boolean
@@ -144,10 +148,12 @@ export type Database = {
           billing_cycle_end?: string | null
           billing_cycle_start?: string | null
           billing_email?: string | null
+          canceled_at?: string | null
           ccc?: string | null
           commercial_name?: string | null
           country?: string
           created_at?: string
+          current_period_end?: string | null
           fiscal_address?: string | null
           id?: string
           is_demo?: boolean
@@ -534,6 +540,41 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_events: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          id: string
+          payload: Json
+          processed_at: string | null
+          type: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          id: string
+          payload: Json
+          processed_at?: string | null
+          type: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       time_entries: {
         Row: {
           company_id: string
@@ -849,6 +890,7 @@ export type Database = {
         Args: { p_pin: string; p_worker_id: string }
         Returns: undefined
       }
+      company_writable: { Args: { _company_id: string }; Returns: boolean }
       enqueue_weekly_summaries: { Args: never; Returns: number }
       is_company_member: { Args: { _company_id: string }; Returns: boolean }
       kiosk_action: {
@@ -910,6 +952,10 @@ export type Database = {
         }[]
       }
       madrid_now: { Args: never; Returns: string }
+      record_billable_workers: {
+        Args: { _company_id: string }
+        Returns: number
+      }
       worker_month_records: {
         Args: {
           p_company_id: string
@@ -932,6 +978,10 @@ export type Database = {
       }
       worker_portal: {
         Args: { p_access_token: string; p_month?: string; p_pin: string }
+        Returns: Json
+      }
+      worker_portal_change_pin: {
+        Args: { p_access_token: string; p_new_pin: string; p_pin: string }
         Returns: Json
       }
       worker_state: { Args: { _worker_id: string }; Returns: string }

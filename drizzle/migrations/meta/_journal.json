@@ -36,6 +36,13 @@
       "when": 1790196120378,
       "tag": "0004_workers_hide_pin_hash",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790196789481,
+      "tag": "0005_security_readonly_billing_ledger",
+      "breakpoints": true
     }
   ]
 }

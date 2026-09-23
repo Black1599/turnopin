@@ -42,9 +42,9 @@ async function runAction(
   const { data, error } = await admin.rpc("whatsapp_action", {
     p_phone: phone,
     p_action: action,
-    p_reported_time: opts.reported ?? undefined,
     p_no_recall: opts.noRecall ?? false,
-    p_location_id: opts.locationId ?? undefined,
+    ...(opts.reported ? { p_reported_time: opts.reported } : {}),
+    ...(opts.locationId ? { p_location_id: opts.locationId } : {}),
   });
   if (error) {
     const known = KNOWN_ERRORS.find((k) => error.message.includes(k));

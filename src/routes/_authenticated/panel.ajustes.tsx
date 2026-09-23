@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { companyQueryKey, logAudit, rpcErrorMessage, useCompany, useWorkers } from "@/lib/company";
 import { formatShortDate } from "@/lib/fmt";
+import { createCheckout, createPortal } from "@/lib/billing.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/_authenticated/panel/ajustes")({
   component: SettingsPage,
@@ -60,6 +62,20 @@ function SettingsPage() {
     if (!company) return;
     setForm(Object.fromEntries(FIELDS.map(([k]) => [k, (company[k] as string | null) ?? ""])) as Record<Key, string>);
   }, [company]);
+
+  const checkout = useServerFn(createCheckout);
+  const portal = useServerFn(createPortal);
+  async function openBilling(kind: "checkout" | "portal") {
+    try {
+      const r = kind === "checkout" ? await checkout() : await portal();
+      if ("url" in r) window.location.href = r.url;
+      else if (r.error === "not_configured")
+        toast.info("El pago aún no está activado. Escríbenos a soporte@turnopin.es si lo necesitas ya.");
+      else toast.error("No se ha podido abrir el pago.");
+    } catch {
+      toast.error("No se ha podido abrir el pago.");
+    }
+  }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();

@@ -187,6 +187,76 @@ export type Database = {
           },
         ]
       }
+      incidents: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          kind: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          time_entry_id: string | null
+          work_date: string | null
+          worker_id: string
+          worker_no_recall: boolean
+          worker_reported_time: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          kind?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          time_entry_id?: string | null
+          work_date?: string | null
+          worker_id: string
+          worker_no_recall?: boolean
+          worker_reported_time?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          time_entry_id?: string | null
+          work_date?: string | null
+          worker_id?: string
+          worker_no_recall?: boolean
+          worker_reported_time?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incidents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_time_entry_id_fkey"
+            columns: ["time_entry_id"]
+            isOneToOne: false
+            referencedRelation: "time_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pin_attempts: {
         Row: {
           company_id: string | null
@@ -277,6 +347,8 @@ export type Database = {
       workers: {
         Row: {
           archived_at: string | null
+          break_paid: boolean
+          break_tracking: boolean
           company_id: string
           created_at: string
           dni_nie: string | null
@@ -291,6 +363,8 @@ export type Database = {
         }
         Insert: {
           archived_at?: string | null
+          break_paid?: boolean
+          break_tracking?: boolean
           company_id: string
           created_at?: string
           dni_nie?: string | null
@@ -305,6 +379,8 @@ export type Database = {
         }
         Update: {
           archived_at?: string | null
+          break_paid?: boolean
+          break_tracking?: boolean
           company_id?: string
           created_at?: string
           dni_nie?: string | null
@@ -341,21 +417,37 @@ export type Database = {
         }
         Returns: Json
       }
+      admin_resolve_incident: {
+        Args: { p_incident_id: string; p_notes?: string }
+        Returns: Json
+      }
       admin_set_worker_pin: {
         Args: { p_pin: string; p_worker_id: string }
         Returns: undefined
       }
       is_company_member: { Args: { _company_id: string }; Returns: boolean }
       kiosk_company: { Args: { p_company_id: string }; Returns: Json }
-      kiosk_punch: {
-        Args: {
-          p_action?: string
-          p_company_id: string
-          p_pin: string
-          p_worker_id: string
-        }
-        Returns: Json
-      }
+      kiosk_punch:
+        | {
+            Args: {
+              p_action?: string
+              p_company_id: string
+              p_pin: string
+              p_worker_id: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_action?: string
+              p_company_id: string
+              p_no_recall?: boolean
+              p_pin: string
+              p_reported_time?: string
+              p_worker_id: string
+            }
+            Returns: Json
+          }
       kiosk_workers: {
         Args: { p_company_id: string }
         Returns: {
@@ -365,6 +457,16 @@ export type Database = {
         }[]
       }
       madrid_now: { Args: never; Returns: string }
+      worker_month_records: {
+        Args: {
+          p_company_id: string
+          p_month: string
+          p_pin: string
+          p_worker_id: string
+        }
+        Returns: Json
+      }
+      worker_state: { Args: { _worker_id: string }; Returns: string }
       worker_status: { Args: { _worker_id: string }; Returns: string }
     }
     Enums: {

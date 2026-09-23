@@ -109,6 +109,22 @@ function WorkersPage() {
     },
   });
 
+  // Non-financial WhatsApp usage for this month (no cost data is exposed to companies).
+  const waUsage = useQuery({
+    queryKey: ["wa-usage", companyId],
+    enabled: Boolean(companyId),
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("company_whatsapp_usage", {
+        p_company_id: companyId!,
+        p_month: new Date().toISOString().slice(0, 10),
+      });
+      if (error) throw error;
+      const map: Record<string, { actions: number; messages: number }> = {};
+      for (const r of data ?? []) map[r.worker_id] = { actions: r.actions, messages: r.messages };
+      return map;
+    },
+  });
+
   const activeCount = workers.filter((w) => w.status === "active").length;
   const atLimit = activeCount >= MAX_SELF_SERVICE_WORKERS;
 
@@ -328,6 +344,11 @@ function WorkersPage() {
                     <Badge variant="outline">
                       WhatsApp {w.whatsapp_link_status === "linked" ? "vinculado" : "pendiente"}
                     </Badge>
+                  )}
+                  {waUsage.data?.[w.id] && (
+                    <span className="text-xs text-muted-foreground">
+                      Este mes por WhatsApp: {waUsage.data[w.id]!.actions} fichajes · {waUsage.data[w.id]!.messages} mensajes
+                    </span>
                   )}
                   {w.break_tracking && (
                     <Badge variant="outline">Pausas {w.break_paid ? "retribuidas" : "no computan"}</Badge>

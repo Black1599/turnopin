@@ -26,7 +26,9 @@ export const Route = createFileRoute("/api/public/cron/notifications")({
         const dispatched = await dispatchPending(supabaseAdmin);
         const { reportBillableWorkers } = await import("@/lib/billing.server");
         const billing = await reportBillableWorkers(supabaseAdmin);
-        return Response.json({ ok: true, enqueued, ...dispatched, billing });
+        // Retention hook: raw WhatsApp debug metadata/webhook payloads older than 90 days are emptied.
+        const { data: purged } = await supabaseAdmin.rpc("whatsapp_purge_debug_metadata", {});
+        return Response.json({ ok: true, enqueued, ...dispatched, billing, whatsapp_purged: purged ?? 0 });
       },
     },
   },

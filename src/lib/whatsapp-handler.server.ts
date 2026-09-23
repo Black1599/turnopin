@@ -15,7 +15,7 @@ import {
 } from "@/lib/whatsapp-bot";
 import type { Button, WhatsAppProvider } from "@/lib/whatsapp.server";
 import { createHash, randomUUID } from "crypto";
-import { inboundFormat, inboundKind, marketOf, normalizePhone, safeStatusMetadata, type EventKind } from "@/lib/whatsapp-telemetry";
+import { inboundFormat, inboundKind, marketOf, normalizePhone, type EventKind } from "@/lib/whatsapp-telemetry";
 
 type Admin = SupabaseClient<Database>;
 type ActionResult = {
@@ -218,7 +218,4 @@ export async function handleStatus(admin: Admin, s: StatusPayload) {
     error_title: s.errors?.[0]?.title ?? null,
   });
   if (error && error.code !== "23505") throw new Error(error.message);
-  if (!error) {
-    void safeStatusMetadata(s); // pricing/origin only; kept on the status row fields above
-  }
 }

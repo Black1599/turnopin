@@ -18,8 +18,8 @@ export const Route = createFileRoute("/terminos")({
   component: () => (
     <LegalPage title="Términos del servicio">
       <p>
-        El servicio incluye 30 días de prueba gratuita. Los planes Local (7,90 €/mes + IVA) y Local+
-        (14,90 €/mes + IVA) se facturan de forma mensual, impuestos no incluidos.
+        El servicio incluye 30 días de prueba gratuita. El servicio cuesta 1,00 € + IVA por trabajador facturable y mes,
+        con facturación mensual automática, sin permanencia ni mínimo mensual.
       </p>
       <p>
         El negocio es responsable de la veracidad de los datos registrados, de informar a su

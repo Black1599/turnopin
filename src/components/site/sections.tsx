@@ -40,7 +40,7 @@ export function Hero() {
             </Button>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
-            Sin tarjeta para empezar · Alta en 5 minutos · Desde 7,90 €/mes + IVA
+            Sin tarjeta para empezar · Alta en 5 minutos · 1 € + IVA por trabajador/mes
           </p>
         </div>
         <div className="card-soft p-6">

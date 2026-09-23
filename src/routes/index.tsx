@@ -16,7 +16,7 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Fichaje de empleados desde un único dispositivo del local. Prueba 30 días gratis desde 7,90 €/mes + IVA.",
+          "Fichaje de empleados desde un único dispositivo del local. 30 días gratis, después 1 € + IVA por trabajador al mes.",
       },
     ],
   }),

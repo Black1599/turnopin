@@ -2,13 +2,15 @@
 // every call checks STRIPE_SECRET_KEY / STRIPE_PRICE_ID and returns "not_configured" if absent.
 import { createHmac, timingSafeEqual } from "crypto";
 
-export const METER_EVENT_NAME = "trabajadores_facturables";
-export const APP_URL = "https://turnopin.es";
+import { meterEvent, type LedgerKind, type PriceConfig } from "./billing-logic";
 
-export function stripeConfig() {
+export { METER_EVENT_NAME, WHATSAPP_METER_EVENT_NAME } from "./billing-logic";
+
+export function stripeConfig(): ({ key: string } & PriceConfig) | null {
   const key = process.env["STRIPE_SECRET_KEY"];
   const priceId = process.env["STRIPE_PRICE_ID"];
-  return key && priceId ? { key, priceId } : null;
+  const whatsappPriceId = process.env["STRIPE_WHATSAPP_PRICE_ID"] || null;
+  return key && priceId ? { key, priceId, whatsappPriceId } : null;
 }
 
 export async function stripeRequest<T = Record<string, unknown>>(
@@ -16,16 +18,18 @@ export async function stripeRequest<T = Record<string, unknown>>(
   path: string,
   params: Record<string, string>,
   idempotencyKey?: string,
+  method: "POST" | "GET" = "POST",
 ): Promise<T> {
   const headers: Record<string, string> = {
     Authorization: `Bearer ${key}`,
     "Content-Type": "application/x-www-form-urlencoded",
   };
   if (idempotencyKey) headers["Idempotency-Key"] = idempotencyKey;
-  const res = await fetch(`https://api.stripe.com${path}`, {
-    method: "POST",
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(`https://api.stripe.com${path}${method === "GET" && qs ? `?${qs}` : ""}`, {
+    method,
     headers,
-    body: new URLSearchParams(params).toString(),
+    body: method === "POST" ? qs : null,
   });
   const json = (await res.json()) as T & { error?: { message: string } };
   if (!res.ok) throw new Error(json.error?.message ?? `Stripe ${res.status}`);
@@ -51,28 +55,36 @@ export function verifyStripeSignature(body: string, header: string | null, secre
 
 type Admin = (typeof import("@/integrations/supabase/client.server"))["supabaseAdmin"];
 
-/** Sends one meter event per unreported ledger row; Stripe dedupes by identifier. */
+const LEDGERS: Record<LedgerKind, "billable_worker_cycles" | "whatsapp_billable_worker_cycles"> = {
+  base: "billable_worker_cycles",
+  whatsapp: "whatsapp_billable_worker_cycles",
+};
+
+/** Sends one meter event per unreported ledger row (base + WhatsApp); Stripe dedupes by identifier. */
 export async function reportBillableWorkers(admin: Admin) {
   const cfg = stripeConfig();
   if (!cfg) return { reported: 0, skipped: "not_configured" };
-  const { data: rows } = await admin
-    .from("billable_worker_cycles")
-    .select("id, company_id, worker_id, cycle_start, companies(stripe_customer_id)")
-    .is("reported_to_stripe_at", null)
-    .limit(500);
-  let reported = 0;
-  for (const r of rows ?? []) {
-    const customer = (r.companies as { stripe_customer_id: string | null } | null)?.stripe_customer_id;
-    if (!customer) continue;
-    const identifier = `${r.company_id}:${r.worker_id}:${r.cycle_start}`;
-    await stripeRequest(cfg.key, "/v1/billing/meter_events", {
-      event_name: METER_EVENT_NAME,
-      identifier,
-      "payload[stripe_customer_id]": customer,
-      "payload[value]": "1",
-    });
-    await admin.from("billable_worker_cycles").update({ reported_to_stripe_at: new Date().toISOString() }).eq("id", r.id);
-    reported++;
+  const out = { reported: 0, whatsapp_reported: 0, errors: 0 };
+  for (const kind of ["base", "whatsapp"] as const) {
+    if (kind === "whatsapp" && !cfg.whatsappPriceId) continue;
+    const { data: rows } = await admin
+      .from(LEDGERS[kind])
+      .select("id, company_id, worker_id, cycle_start, companies(stripe_customer_id)")
+      .is("reported_to_stripe_at", null)
+      .limit(500);
+    for (const r of rows ?? []) {
+      const customer = (r.companies as { stripe_customer_id: string | null } | null)?.stripe_customer_id;
+      if (!customer) continue;
+      try {
+        const ev = meterEvent(kind, r, customer);
+        await stripeRequest(cfg.key, "/v1/billing/meter_events", ev, ev.identifier);
+        await admin.from(LEDGERS[kind]).update({ reported_to_stripe_at: new Date().toISOString() }).eq("id", r.id);
+        if (kind === "base") out.reported++;
+        else out.whatsapp_reported++;
+      } catch {
+        out.errors++;
+      }
+    }
   }
-  return { reported };
+  return out;
 }

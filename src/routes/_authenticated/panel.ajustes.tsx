@@ -71,6 +71,8 @@ function SettingsPage() {
       if ("url" in r) window.location.href = r.url;
       else if (r.error === "not_configured")
         toast.info("El pago aún no está activado. Escríbenos a soporte@turnopin.es si lo necesitas ya.");
+      else if (r.error === "already_subscribed")
+        toast.info("Ya tienes un método de pago. Gestiónalo en «Facturas y datos de pago».");
       else toast.error("No se ha podido abrir el pago.");
     } catch {
       toast.error("No se ha podido abrir el pago.");
@@ -142,8 +144,10 @@ function SettingsPage() {
         </div>
         <p className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
           Cada trabajador activo en un ciclo cuenta una vez (1 € completo, sin prorrateo), aunque lo archives y
-          reactives. Durante la prueba no se cobra nada. Si la prueba termina sin método de pago, la cuenta pasa a
-          solo lectura hasta que lo añadas.
+          reactives. Extra WhatsApp: +1 € + IVA por trabajador con WhatsApp activado en el ciclo, con la misma
+          regla. Durante la prueba no se cobra nada: puedes añadir el método de pago ahora y el primer cobro llegará
+          al terminar la prueba, sin acortarla ni alargarla. Si la prueba termina sin método de pago, la cuenta pasa
+          a solo lectura hasta que lo añadas.
         </p>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={() => void openBilling("checkout")}>

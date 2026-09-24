@@ -72,8 +72,7 @@ export function SiteFooter() {
         </nav>
       </div>
       <div className="container-page pb-8 text-xs text-muted-foreground">
-        © {new Date().getFullYear()} TurnoPIN. Documentos legales pendientes de revisión
-        profesional.
+        © {new Date().getFullYear()} TurnoPIN.
       </div>
     </footer>
   );

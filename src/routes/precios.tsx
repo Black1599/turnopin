@@ -17,6 +17,8 @@ export const Route = createFileRoute("/precios")({
         property: "og:description",
         content: "1 € + IVA por trabajador activo. WhatsApp opcional +1 € + IVA por trabajador activado. Sin permanencia y 30 días gratis.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: PreciosPage,

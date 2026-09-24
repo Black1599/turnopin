@@ -10,7 +10,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Control horario para bares, cafeterías y negocios pequeños: kiosco con PIN o fichaje opcional por WhatsApp. 30 días gratis; después 1 € + IVA por trabajador al mes.",
+          "Control horario para negocios pequeños: kiosco con PIN o fichaje opcional por WhatsApp. 30 días gratis; después 1 € + IVA por trabajador al mes.",
       },
       { property: "og:title", content: "TurnoPIN · Una pantalla. Un PIN. Y a trabajar." },
       {
@@ -18,6 +18,8 @@ export const Route = createFileRoute("/")({
         content:
           "Fichaje de empleados desde el kiosco del local o por WhatsApp opcional. 30 días gratis, después 1 € + IVA por trabajador al mes, WhatsApp +1 € + IVA por trabajador activado.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Index,

@@ -17,6 +17,8 @@ export const Route = createFileRoute("/faq")({
         property: "og:description",
         content: "Cómo funciona el kiosco con PIN, las correcciones y los informes mensuales.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: FaqPage,

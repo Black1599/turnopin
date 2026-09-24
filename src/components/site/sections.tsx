@@ -257,7 +257,7 @@ const faqs = [
   },
   {
     q: "¿Se puede fichar por WhatsApp?",
-    a: "Sí, como opción. El responsable puede activarlo por trabajador; el trabajador vincula su número con su PIN o un código de un solo uso y ficha con botones. Usar el móvil personal es voluntario: el kiosco sigue disponible siempre.",
+    a: "Sí, como opción. El responsable activa WhatsApp por trabajador (+1 € + IVA sobre el precio base de ese trabajador). El trabajador vincula su número con su PIN o un código de un solo uso y ficha con botones de Entrar, Pausa, Volver y Salir. Usar el móvil personal es voluntario: el kiosco sigue disponible siempre.",
   },
   {
     q: "¿Puedo tener varios turnos al día?",

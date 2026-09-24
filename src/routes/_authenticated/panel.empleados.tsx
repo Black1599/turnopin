@@ -93,6 +93,8 @@ function WorkersPage() {
   const [linkTarget, setLinkTarget] = useState<Worker | null>(null);
   const [waTarget, setWaTarget] = useState<Worker | null>(null);
   const [waCode, setWaCode] = useState<string | null>(null);
+  const [waPriceConfirm, setWaPriceConfirm] = useState(false);
+
 
   const assignments = useQuery({
     queryKey: ["worker-locations", companyId],
@@ -206,12 +208,18 @@ function WorkersPage() {
       toast.success(editing ? "Trabajador actualizado" : "Trabajador creado");
       if (created && activeCount + 1 === MAX_SELF_SERVICE_WORKERS)
         toast.warning("Has llegado al máximo de 30 trabajadores activos en autoservicio.");
+      setWaPriceConfirm(false);
       setOpen(false);
+
       setEditing(null);
       setForm(emptyForm);
       invalidate();
     },
-    onError: (error) => toast.error(rpcErrorMessage(error, "Error al guardar")),
+    onError: (error) => {
+      setWaPriceConfirm(false);
+      toast.error(rpcErrorMessage(error, "Error al guardar"));
+    },
+
   });
 
   const toggleStatus = useMutation({
@@ -525,6 +533,9 @@ function WorkersPage() {
                 />
                 Permitir fichar también por WhatsApp (opcional)
               </label>
+              <p className="pl-8 text-sm font-medium text-foreground">
+                +1 € + IVA / trabajador con WhatsApp activado / mes
+              </p>
               <Field label={form.whatsapp_enabled ? "Teléfono móvil *" : "Teléfono móvil (opcional)"}>
                 <Input
                   type="tel"
@@ -537,22 +548,52 @@ function WorkersPage() {
               </Field>
               <p className="text-xs text-muted-foreground">
                 Usar su móvil personal es voluntario: el kiosco sigue disponible siempre. Cambiar el teléfono o
-                desactivar WhatsApp desvincula el número al momento.
+                desactivar WhatsApp desvincula el número al momento. Si desactivas WhatsApp, no hay devolución
+                del ciclo en curso: deja de contar a partir de la siguiente renovación.
               </p>
             </div>
+
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={() => saveWorker.mutate()} disabled={saveWorker.isPending}>
+            <Button
+              onClick={() => {
+                if (form.whatsapp_enabled && !editing?.whatsapp_enabled) setWaPriceConfirm(true);
+                else saveWorker.mutate();
+              }}
+              disabled={saveWorker.isPending}
+            >
               Guardar
+            </Button>
+
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={waPriceConfirm} onOpenChange={setWaPriceConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Activar WhatsApp para este trabajador</DialogTitle>
+            <DialogDescription>
+              Activar WhatsApp para este trabajador añadirá 1 € + IVA al ciclo mensual actual. No se prorratea.
+              Si lo desactivas después, dejará de contar a partir del siguiente ciclo.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setWaPriceConfirm(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={() => saveWorker.mutate()} disabled={saveWorker.isPending}>
+              Activar WhatsApp (+1 €)
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <Dialog open={Boolean(pinTarget)} onOpenChange={(v) => !v && setPinTarget(null)}>
+
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Restablecer PIN de {pinTarget ? workerName(pinTarget) : ""}</DialogTitle>

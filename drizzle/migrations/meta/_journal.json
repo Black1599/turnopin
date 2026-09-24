@@ -113,6 +113,13 @@
       "when": 1790239900723,
       "tag": "0015_grant_platform_admin_owner",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1790239925948,
+      "tag": "0016_verify_platform_admin_grant",
+      "breakpoints": true
     }
   ]
 }

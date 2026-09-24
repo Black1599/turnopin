@@ -527,6 +527,9 @@ function WorkersPage() {
                 />
                 Permitir fichar también por WhatsApp (opcional)
               </label>
+              <p className="pl-8 text-sm font-medium text-foreground">
+                +1 € + IVA / trabajador con WhatsApp activado / mes
+              </p>
               <Field label={form.whatsapp_enabled ? "Teléfono móvil *" : "Teléfono móvil (opcional)"}>
                 <Input
                   type="tel"
@@ -539,9 +542,11 @@ function WorkersPage() {
               </Field>
               <p className="text-xs text-muted-foreground">
                 Usar su móvil personal es voluntario: el kiosco sigue disponible siempre. Cambiar el teléfono o
-                desactivar WhatsApp desvincula el número al momento.
+                desactivar WhatsApp desvincula el número al momento. Si desactivas WhatsApp, no hay devolución
+                del ciclo en curso: deja de contar a partir de la siguiente renovación.
               </p>
             </div>
+
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>

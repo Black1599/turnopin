@@ -552,9 +552,16 @@ function WorkersPage() {
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={() => saveWorker.mutate()} disabled={saveWorker.isPending}>
+            <Button
+              onClick={() => {
+                if (form.whatsapp_enabled && !editing?.whatsapp_enabled) setWaPriceConfirm(true);
+                else saveWorker.mutate();
+              }}
+              disabled={saveWorker.isPending}
+            >
               Guardar
             </Button>
+
           </DialogFooter>
         </DialogContent>
       </Dialog>

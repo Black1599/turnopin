@@ -22,6 +22,7 @@ import { Route as AuthenticatedPanelRouteImport } from './routes/_authenticated/
 import { Route as KioscoIndexRouteImport } from './routes/kiosco.index'
 import { Route as KioscoTokenRouteImport } from './routes/kiosco.$token'
 import { Route as MiTokenRouteImport } from './routes/mi.$token'
+import { Route as AuthenticatedInternoIndexRouteImport } from './routes/_authenticated/interno.index'
 import { Route as AuthenticatedInternoWhatsappRouteImport } from './routes/_authenticated/interno.whatsapp'
 import { Route as AuthenticatedPanelIndexRouteImport } from './routes/_authenticated/panel.index'
 import { Route as AuthenticatedPanelAjustesRouteImport } from './routes/_authenticated/panel.ajustes'
@@ -99,6 +100,12 @@ const MiTokenRoute = MiTokenRouteImport.update({
   path: '/mi/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedInternoIndexRoute =
+  AuthenticatedInternoIndexRouteImport.update({
+    id: '/interno/',
+    path: '/interno/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedInternoWhatsappRoute =
   AuthenticatedInternoWhatsappRouteImport.update({
     id: '/interno/whatsapp',
@@ -191,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/panel/informes': typeof AuthenticatedPanelInformesRoute
   '/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/panel/registros': typeof AuthenticatedPanelRegistrosRoute
+  '/interno/': typeof AuthenticatedInternoIndexRoute
   '/panel/': typeof AuthenticatedPanelIndexRoute
   '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -216,6 +224,7 @@ export interface FileRoutesByTo {
   '/panel/informes': typeof AuthenticatedPanelInformesRoute
   '/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/panel/registros': typeof AuthenticatedPanelRegistrosRoute
+  '/interno': typeof AuthenticatedInternoIndexRoute
   '/panel': typeof AuthenticatedPanelIndexRoute
   '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -244,6 +253,7 @@ export interface FileRoutesById {
   '/_authenticated/panel/informes': typeof AuthenticatedPanelInformesRoute
   '/_authenticated/panel/locales': typeof AuthenticatedPanelLocalesRoute
   '/_authenticated/panel/registros': typeof AuthenticatedPanelRegistrosRoute
+  '/_authenticated/interno/': typeof AuthenticatedInternoIndexRoute
   '/_authenticated/panel/': typeof AuthenticatedPanelIndexRoute
   '/api/public/cron/notifications': typeof ApiPublicCronNotificationsRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -272,6 +282,7 @@ export interface FileRouteTypes {
     | '/panel/informes'
     | '/panel/locales'
     | '/panel/registros'
+    | '/interno/'
     | '/panel/'
     | '/api/public/cron/notifications'
     | '/api/public/stripe/webhook'
@@ -297,6 +308,7 @@ export interface FileRouteTypes {
     | '/panel/informes'
     | '/panel/locales'
     | '/panel/registros'
+    | '/interno'
     | '/panel'
     | '/api/public/cron/notifications'
     | '/api/public/stripe/webhook'
@@ -324,6 +336,7 @@ export interface FileRouteTypes {
     | '/_authenticated/panel/informes'
     | '/_authenticated/panel/locales'
     | '/_authenticated/panel/registros'
+    | '/_authenticated/interno/'
     | '/_authenticated/panel/'
     | '/api/public/cron/notifications'
     | '/api/public/stripe/webhook'
@@ -441,6 +454,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MiTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/interno/': {
+      id: '/_authenticated/interno/'
+      path: '/interno'
+      fullPath: '/interno/'
+      preLoaderRoute: typeof AuthenticatedInternoIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/interno/whatsapp': {
       id: '/_authenticated/interno/whatsapp'
       path: '/interno/whatsapp'
@@ -556,11 +576,13 @@ const AuthenticatedPanelRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedPanelRoute: typeof AuthenticatedPanelRouteWithChildren
   AuthenticatedInternoWhatsappRoute: typeof AuthenticatedInternoWhatsappRoute
+  AuthenticatedInternoIndexRoute: typeof AuthenticatedInternoIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPanelRoute: AuthenticatedPanelRouteWithChildren,
   AuthenticatedInternoWhatsappRoute: AuthenticatedInternoWhatsappRoute,
+  AuthenticatedInternoIndexRoute: AuthenticatedInternoIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

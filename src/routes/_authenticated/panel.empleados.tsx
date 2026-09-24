@@ -566,7 +566,28 @@ function WorkersPage() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={waPriceConfirm} onOpenChange={setWaPriceConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Activar WhatsApp para este trabajador</DialogTitle>
+            <DialogDescription>
+              Activar WhatsApp para este trabajador añadirá 1 € + IVA al ciclo mensual actual. No se prorratea.
+              Si lo desactivas después, dejará de contar a partir del siguiente ciclo.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setWaPriceConfirm(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={() => saveWorker.mutate()} disabled={saveWorker.isPending}>
+              Activar WhatsApp (+1 €)
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={Boolean(pinTarget)} onOpenChange={(v) => !v && setPinTarget(null)}>
+
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Restablecer PIN de {pinTarget ? workerName(pinTarget) : ""}</DialogTitle>

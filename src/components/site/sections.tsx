@@ -73,7 +73,7 @@ const steps = [
     text: "Abre el kiosco en una tablet o móvil del local y déjalo siempre en esa pantalla.",
   },
   {
-    icon: Fingerprint,
+    icon: KeyRound,
     title: "2. Cada empleado ficha con su PIN",
     text: "Elige su nombre, escribe sus 4 dígitos y pulsa entrar o salir. Nada más.",
   },

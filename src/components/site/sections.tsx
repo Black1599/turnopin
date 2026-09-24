@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Check, Fingerprint, ListChecks, Monitor, ShieldCheck, Smartphone, Table2 } from "lucide-react";
+import { Check, KeyRound, ListChecks, MessageCircle, Monitor, ShieldCheck, Smartphone, Table2 } from "lucide-react";
 
 import {
   Accordion,
@@ -22,9 +22,9 @@ export function Hero() {
             Una pantalla. Un PIN. Y a trabajar.
           </h1>
           <p className="mt-6 max-w-xl text-lg text-muted-foreground">
-            Pon una tablet o un móvil compartido en la barra. Cada empleado elige su nombre,
-            introduce su PIN de 4 dígitos y ficha su entrada o su salida. Sin instalar nada en el
-            móvil de tu equipo.
+            Pon una tablet o móvil compartido en la barra y ficha desde el kiosco. O activa
+            WhatsApp para quien lo prefiera: elige entrada, pausa, volver o salir con un botón.
+            Sin instalar aplicaciones.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-12 px-7 text-base">
@@ -36,11 +36,11 @@ export function Hero() {
               <Link to="/kiosco/$token" params={{ token: "demo" }}>
                 Ver el kiosco de demo
               </Link>
-
             </Button>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
-            Sin tarjeta para empezar · Alta en 5 minutos · 1 € + IVA por trabajador/mes
+            Sin tarjeta para empezar · Alta en 5 minutos · 1 € + IVA por trabajador/mes · WhatsApp
+            opcional +1 € + IVA por trabajador activado
           </p>
         </div>
         <div className="card-soft p-6">
@@ -73,7 +73,7 @@ const steps = [
     text: "Abre el kiosco en una tablet o móvil del local y déjalo siempre en esa pantalla.",
   },
   {
-    icon: Fingerprint,
+    icon: KeyRound,
     title: "2. Cada empleado ficha con su PIN",
     text: "Elige su nombre, escribe sus 4 dígitos y pulsa entrar o salir. Nada más.",
   },
@@ -115,9 +115,14 @@ const features = [
     text: "Funciona en tablet o móvil. Tu equipo no necesita instalar ninguna aplicación.",
   },
   {
-    icon: Fingerprint,
+    icon: KeyRound,
     title: "PIN de 4 dígitos",
     text: "Se guarda cifrado y nunca se vuelve a mostrar. Puedes restablecerlo cuando quieras.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Fichaje por WhatsApp",
+    text: "Opcional: botones de Entrar, Pausa, Volver y Salir desde el móvil personal. El kiosco sigue disponible siempre; lo activas solo para quien quieras.",
   },
   {
     icon: ListChecks,
@@ -160,7 +165,7 @@ export function Features() {
   );
 }
 
-const included = [
+const baseIncluded = [
   "Locales ilimitados, un kiosco por local",
   "Kiosco con PIN y pausas opcionales",
   "Incidencias y correcciones con historial",
@@ -169,48 +174,74 @@ const included = [
   "Administrador gratis",
 ];
 
+const whatsappIncluded = [
+  "Entrar / Pausa / Volver / Salir por WhatsApp",
+  "Sin instalar aplicaciones en el móvil",
+  "Un mismo número puede servir a varios negocios",
+  "Actívalo solo para los trabajadores que quieras",
+  "El kiosco sigue disponible siempre",
+];
+
 export function Pricing() {
   return (
     <section className="section border-b bg-surface">
       <div className="container-page">
-        <h2 className="text-3xl font-bold md:text-4xl">Un precio. Todo incluido.</h2>
+        <h2 className="text-3xl font-bold md:text-4xl">Un precio por trabajador. Todo incluido.</h2>
         <p className="mt-3 text-muted-foreground">
-          30 días gratis sin tarjeta. Sin permanencia, sin mínimo mensual.
+          TurnoPIN base obligatorio · WhatsApp opcional por trabajador. 30 días gratis sin tarjeta.
         </p>
-        <div className="card-soft mt-10 max-w-xl p-7 ring-2 ring-primary">
-          <div className="flex items-baseline gap-2">
-            <span className="text-5xl font-extrabold">1 €</span>
-            <span className="text-sm text-muted-foreground">+ IVA por trabajador activo / mes</span>
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
+          <div className="card-soft p-7 ring-2 ring-primary">
+            <div className="flex items-baseline gap-2">
+              <span className="text-5xl font-extrabold">1 €</span>
+              <span className="text-sm text-muted-foreground">+ IVA por trabajador activo / mes</span>
+            </div>
+            <p className="mt-2 text-sm font-medium text-primary">TurnoPIN</p>
+            <ul className="mt-6 space-y-3 text-sm">
+              {baseIncluded.map((f) => (
+                <li key={f} className="flex gap-2">
+                  <Check className="h-4 w-4 shrink-0 text-primary" />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="mt-6 space-y-3 text-sm">
-            {included.map((f) => (
-              <li key={f} className="flex gap-2">
-                <Check className="h-4 w-4 shrink-0 text-primary" />
-                <span>{f}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-6 space-y-2 rounded-lg bg-muted p-4 text-xs text-muted-foreground">
-            <p>
-              Cada trabajador activo en un ciclo mensual cuenta 1 € completo, sin prorrateo, y como
-              máximo una vez por ciclo aunque se archive y se reactive.
+          <div className="card-soft p-7">
+            <div className="flex items-baseline gap-2">
+              <span className="text-5xl font-extrabold">+1 €</span>
+              <span className="text-sm text-muted-foreground">+ IVA por trabajador con WhatsApp activado / mes</span>
+            </div>
+            <p className="mt-2 text-sm font-medium text-primary">Extra WhatsApp</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Un trabajador con WhatsApp activado cuesta 2 € + IVA en total: 1 € base + 1 € WhatsApp.
             </p>
-            <p>Si archivas a alguien, deja de contar desde la siguiente renovación.</p>
-            <p>Durante la prueba no se cobra ningún trabajador. Una prueba por NIF/CIF.</p>
+            <ul className="mt-4 space-y-3 text-sm">
+              {whatsappIncluded.map((f) => (
+                <li key={f} className="flex gap-2">
+                  <Check className="h-4 w-4 shrink-0 text-primary" />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <Button asChild className="mt-7 h-11 w-full">
-            <Link to="/auth" search={{ modo: "registro" }}>
-              Probar 30 días gratis
-            </Link>
-          </Button>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            Alta directa hasta 30 trabajadores. ¿Necesitas más capacidad?{" "}
-            <a href="mailto:soporte@turnopin.es" className="font-medium text-primary underline">
-              Contacta con nosotros
-            </a>
-          </p>
         </div>
-        <p className="mt-6 max-w-2xl text-xs text-muted-foreground">
+        <div className="mt-8 rounded-lg bg-muted p-4 text-xs text-muted-foreground">
+          <p>
+            Cada trabajador activo en un ciclo mensual cuenta 1 € base completo, sin prorrateo, y
+            como máximo una vez por ciclo aunque se archive y se reactive. El extra WhatsApp se
+            aplica solo a los trabajadores con la opción activada.
+          </p>
+          <p className="mt-2">
+            Si archivas a alguien, deja de contar desde la siguiente renovación.
+          </p>
+          <p className="mt-2">Durante la prueba no se cobra ningún trabajador. Una prueba por NIF/CIF.</p>
+        </div>
+        <Button asChild className="mt-8 h-11 w-full md:w-auto md:px-12">
+          <Link to="/auth" search={{ modo: "registro" }}>
+            Probar 30 días gratis
+          </Link>
+        </Button>
+        <p className="mt-4 max-w-2xl text-xs text-muted-foreground">
           TurnoPIN es una herramienta diseñada para facilitar el registro de jornada. No ofrecemos
           garantías de cumplimiento normativo: consulta con tu asesor laboral cómo aplicarlo.
         </p>
@@ -226,7 +257,7 @@ const faqs = [
   },
   {
     q: "¿Se puede fichar por WhatsApp?",
-    a: "Sí, como opción. El responsable puede activarlo por trabajador; el trabajador vincula su número con su PIN o un código de un solo uso y ficha con botones. Usar el móvil personal es voluntario: el kiosco sigue disponible siempre.",
+    a: "Sí, como opción. El responsable activa WhatsApp por trabajador (+1 € + IVA sobre el precio base de ese trabajador). El trabajador vincula su número con su PIN o un código de un solo uso y ficha con botones de Entrar, Pausa, Volver y Salir. Usar el móvil personal es voluntario: el kiosco sigue disponible siempre.",
   },
   {
     q: "¿Puedo tener varios turnos al día?",

@@ -215,7 +215,11 @@ function WorkersPage() {
       setForm(emptyForm);
       invalidate();
     },
-    onError: (error) => toast.error(rpcErrorMessage(error, "Error al guardar")),
+    onError: (error) => {
+      setWaPriceConfirm(false);
+      toast.error(rpcErrorMessage(error, "Error al guardar"));
+    },
+
   });
 
   const toggleStatus = useMutation({

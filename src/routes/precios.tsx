@@ -30,8 +30,8 @@ function PreciosPage() {
         <div className="container-page pt-14">
           <h1 className="text-4xl font-extrabold md:text-5xl">Precios</h1>
           <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Paga por lo que usas. Empieza con 30 días gratis y cámbiate de plan cuando crezca tu
-            equipo.
+            Paga por trabajador. TurnoPIN base más WhatsApp opcional, activado solo para quien
+            quieras. Empieza con 30 días gratis.
           </p>
         </div>
         <Pricing />

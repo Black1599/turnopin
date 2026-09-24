@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Check, Fingerprint, ListChecks, Monitor, ShieldCheck, Smartphone, Table2 } from "lucide-react";
+import { Check, KeyRound, ListChecks, MessageCircle, Monitor, ShieldCheck, Smartphone, Table2 } from "lucide-react";
 
 import {
   Accordion,

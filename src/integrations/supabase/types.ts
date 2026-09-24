@@ -543,6 +543,36 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_role_grants: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          performed_by: string
+          reason: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          performed_by?: string
+          reason: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          performed_by?: string
+          reason?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       stripe_events: {
         Row: {
           company_id: string | null
@@ -1366,6 +1396,11 @@ export type Database = {
       }
       madrid_now: { Args: never; Returns: string }
       normalize_tax_id: { Args: { _t: string }; Returns: string }
+      platform_overview: { Args: never; Returns: Json }
+      platform_set_role: {
+        Args: { p_email: string; p_grant: boolean; p_reason: string }
+        Returns: string
+      }
       punch_core: {
         Args: {
           p_action: string

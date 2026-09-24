@@ -165,7 +165,7 @@ export function Features() {
   );
 }
 
-const included = [
+const baseIncluded = [
   "Locales ilimitados, un kiosco por local",
   "Kiosco con PIN y pausas opcionales",
   "Incidencias y correcciones con historial",
@@ -174,48 +174,74 @@ const included = [
   "Administrador gratis",
 ];
 
+const whatsappIncluded = [
+  "Entrar / Pausa / Volver / Salir por WhatsApp",
+  "Sin instalar aplicaciones en el móvil",
+  "Un mismo número puede servir a varios negocios",
+  "Actívalo solo para los trabajadores que quieras",
+  "El kiosco sigue disponible siempre",
+];
+
 export function Pricing() {
   return (
     <section className="section border-b bg-surface">
       <div className="container-page">
-        <h2 className="text-3xl font-bold md:text-4xl">Un precio. Todo incluido.</h2>
+        <h2 className="text-3xl font-bold md:text-4xl">Un precio por trabajador. Todo incluido.</h2>
         <p className="mt-3 text-muted-foreground">
-          30 días gratis sin tarjeta. Sin permanencia, sin mínimo mensual.
+          TurnoPIN base obligatorio · WhatsApp opcional por trabajador. 30 días gratis sin tarjeta.
         </p>
-        <div className="card-soft mt-10 max-w-xl p-7 ring-2 ring-primary">
-          <div className="flex items-baseline gap-2">
-            <span className="text-5xl font-extrabold">1 €</span>
-            <span className="text-sm text-muted-foreground">+ IVA por trabajador activo / mes</span>
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
+          <div className="card-soft p-7 ring-2 ring-primary">
+            <div className="flex items-baseline gap-2">
+              <span className="text-5xl font-extrabold">1 €</span>
+              <span className="text-sm text-muted-foreground">+ IVA por trabajador activo / mes</span>
+            </div>
+            <p className="mt-2 text-sm font-medium text-primary">TurnoPIN</p>
+            <ul className="mt-6 space-y-3 text-sm">
+              {baseIncluded.map((f) => (
+                <li key={f} className="flex gap-2">
+                  <Check className="h-4 w-4 shrink-0 text-primary" />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="mt-6 space-y-3 text-sm">
-            {included.map((f) => (
-              <li key={f} className="flex gap-2">
-                <Check className="h-4 w-4 shrink-0 text-primary" />
-                <span>{f}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-6 space-y-2 rounded-lg bg-muted p-4 text-xs text-muted-foreground">
-            <p>
-              Cada trabajador activo en un ciclo mensual cuenta 1 € completo, sin prorrateo, y como
-              máximo una vez por ciclo aunque se archive y se reactive.
+          <div className="card-soft p-7">
+            <div className="flex items-baseline gap-2">
+              <span className="text-5xl font-extrabold">+1 €</span>
+              <span className="text-sm text-muted-foreground">+ IVA por trabajador con WhatsApp activado / mes</span>
+            </div>
+            <p className="mt-2 text-sm font-medium text-primary">Extra WhatsApp</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Un trabajador con WhatsApp activado cuesta 2 € + IVA en total: 1 € base + 1 € WhatsApp.
             </p>
-            <p>Si archivas a alguien, deja de contar desde la siguiente renovación.</p>
-            <p>Durante la prueba no se cobra ningún trabajador. Una prueba por NIF/CIF.</p>
+            <ul className="mt-4 space-y-3 text-sm">
+              {whatsappIncluded.map((f) => (
+                <li key={f} className="flex gap-2">
+                  <Check className="h-4 w-4 shrink-0 text-primary" />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <Button asChild className="mt-7 h-11 w-full">
-            <Link to="/auth" search={{ modo: "registro" }}>
-              Probar 30 días gratis
-            </Link>
-          </Button>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            Alta directa hasta 30 trabajadores. ¿Necesitas más capacidad?{" "}
-            <a href="mailto:soporte@turnopin.es" className="font-medium text-primary underline">
-              Contacta con nosotros
-            </a>
-          </p>
         </div>
-        <p className="mt-6 max-w-2xl text-xs text-muted-foreground">
+        <div className="mt-8 rounded-lg bg-muted p-4 text-xs text-muted-foreground">
+          <p>
+            Cada trabajador activo en un ciclo mensual cuenta 1 € base completo, sin prorrateo, y
+            como máximo una vez por ciclo aunque se archive y se reactive. El extra WhatsApp se
+            aplica solo a los trabajadores con la opción activada.
+          </p>
+          <p className="mt-2">
+            Si archivas a alguien, deja de contar desde la siguiente renovación.
+          </p>
+          <p className="mt-2">Durante la prueba no se cobra ningún trabajador. Una prueba por NIF/CIF.</p>
+        </div>
+        <Button asChild className="mt-8 h-11 w-full md:w-auto md:px-12">
+          <Link to="/auth" search={{ modo: "registro" }}>
+            Probar 30 días gratis
+          </Link>
+        </Button>
+        <p className="mt-4 max-w-2xl text-xs text-muted-foreground">
           TurnoPIN es una herramienta diseñada para facilitar el registro de jornada. No ofrecemos
           garantías de cumplimiento normativo: consulta con tu asesor laboral cómo aplicarlo.
         </p>

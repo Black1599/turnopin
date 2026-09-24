@@ -115,9 +115,14 @@ const features = [
     text: "Funciona en tablet o móvil. Tu equipo no necesita instalar ninguna aplicación.",
   },
   {
-    icon: Fingerprint,
+    icon: KeyRound,
     title: "PIN de 4 dígitos",
     text: "Se guarda cifrado y nunca se vuelve a mostrar. Puedes restablecerlo cuando quieras.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Fichaje por WhatsApp",
+    text: "Opcional: botones de Entrar, Pausa, Volver y Salir desde el móvil personal. El kiosco sigue disponible siempre; lo activas solo para quien quieras.",
   },
   {
     icon: ListChecks,

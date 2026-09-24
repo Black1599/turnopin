@@ -6,16 +6,16 @@ import { Faq, FinalCta, Pricing } from "@/components/site/sections";
 export const Route = createFileRoute("/precios")({
   head: () => ({
     meta: [
-      { title: "Precios de TurnoPIN · 1 € + IVA por trabajador al mes" },
+      { title: "Precios de TurnoPIN · 1 € + IVA, WhatsApp +1 € + IVA" },
       {
         name: "description",
         content:
-          "1 € + IVA por trabajador activo al mes, todo incluido y locales ilimitados. 30 días de prueba gratis sin tarjeta.",
+          "TurnoPIN base 1 € + IVA por trabajador activo al mes. WhatsApp opcional +1 € + IVA por trabajador activado. Todo incluido, locales ilimitados y 30 días gratis sin tarjeta.",
       },
       { property: "og:title", content: "Precios de TurnoPIN" },
       {
         property: "og:description",
-        content: "Un único precio por trabajador, sin permanencia y con 30 días gratis.",
+        content: "1 € + IVA por trabajador activo. WhatsApp opcional +1 € + IVA por trabajador activado. Sin permanencia y 30 días gratis.",
       },
     ],
   }),

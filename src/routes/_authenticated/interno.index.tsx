@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/interno/")({
   }),
 });
 
-type Overview = Record<string, number> & { by_status: Record<string, number> };
+type Overview = { by_status: Record<string, number> } & { [k: string]: any };
 
 const STATUS: Record<string, string> = {
   trialing: "En prueba",

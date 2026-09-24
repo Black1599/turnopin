@@ -1,17 +1,17 @@
-# Public WhatsApp offer update
+# Demo de kiosco aislada y ajustes de copy
 
-## Landing page
-- Replace both biometric `Fingerprint` icons for PIN clocking with `KeyRound`.
-- Mention the shared kiosk and optional WhatsApp clocking together in the opening message.
-- Add a prominent WhatsApp benefit using `MessageCircle`, covering no app installation, Entrar/Pausa/Volver/Salir buttons, voluntary personal-phone use, and continued kiosk availability.
+## Demo `/kiosco/demo`
+- Separar por completo la demo del kiosco real: para el token `demo`, no consultar ni escribir en la base de datos y mantener trabajadores, PIN, fichajes, pausas e incidencias únicamente en el estado de memoria de esa carga.
+- Inicializar Ana fuera con un turno completo de hoy, Luis con el único turno abierto del día anterior y Marta trabajando hoy con pausas activadas.
+- Reutilizar la misma pantalla y reglas visibles del kiosco, simulando PIN, cambio de PIN, fichajes, pausas y salida olvidada; conservar los cambios al alternar trabajadores y restaurarlos al recargar.
+- Añadir “Salir de la demo” para abandonar la demo y descartar el estado. Mantener intacta la ruta real para cualquier otro token y sus llamadas actuales.
 
-## Pricing presentation
-- Present two clear offers: TurnoPIN at €1 + VAT per active worker/month, and Extra WhatsApp at +€1 + VAT only per WhatsApp-enabled worker/month.
-- State that TurnoPIN + WhatsApp costs €2 + VAT for each enabled worker and that businesses choose which workers receive it.
-- Preserve the existing base billing rules, free administrator, unlimited locations, 30-day trial, and self-service limit of 30 workers.
-- Update the dedicated pricing page introduction and metadata to remove outdated plan language.
+## Textos públicos
+- Actualizar la FAQ de instalación para describir el kiosco web por enlace y PIN, con WhatsApp opcional; eliminar la FAQ de garantía legal.
+- Sustituir referencias restrictivas de marketing principal y SEO a bares/cafeterías por “negocios pequeños”, sin cambiar “Bar Demo”.
+- Cambiar el CTA final a “Empieza hoy” y simplificar el copyright a “© [año] TurnoPIN.”, sin editar los avisos de las páginas legales.
 
-## Scope and verification
-- Change public presentation only; do not modify billing or product logic.
-- Search public copy for outdated undecided/minimum-only WhatsApp pricing language.
-- Run TypeScript checks and confirm the preview build is clean.
+## Verificación
+- Comprobar en navegador la demo, su reinicio tras recarga y la ausencia de peticiones persistentes/RPC de escritura.
+- Verificar que un kiosco real conserva su ruta de llamadas actual.
+- Ejecutar pruebas, comprobación de tipos y confirmar que la compilación queda limpia.

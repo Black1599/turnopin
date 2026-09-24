@@ -29,7 +29,7 @@ export async function stripeRequest<T = Record<string, unknown>>(
   const res = await fetch(`https://api.stripe.com${path}${method === "GET" && qs ? `?${qs}` : ""}`, {
     method,
     headers,
-    body: method === "POST" ? qs : undefined,
+    body: method === "POST" ? qs : null,
   });
   const json = (await res.json()) as T & { error?: { message: string } };
   if (!res.ok) throw new Error(json.error?.message ?? `Stripe ${res.status}`);

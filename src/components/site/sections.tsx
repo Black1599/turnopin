@@ -22,9 +22,9 @@ export function Hero() {
             Una pantalla. Un PIN. Y a trabajar.
           </h1>
           <p className="mt-6 max-w-xl text-lg text-muted-foreground">
-            Pon una tablet o un móvil compartido en la barra. Cada empleado elige su nombre,
-            introduce su PIN de 4 dígitos y ficha su entrada o su salida. Sin instalar nada en el
-            móvil de tu equipo.
+            Pon una tablet o móvil compartido en la barra y ficha desde el kiosco. O activa
+            WhatsApp para quien lo prefiera: elige entrada, pausa, volver o salir con un botón.
+            Sin instalar aplicaciones.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-12 px-7 text-base">
@@ -36,11 +36,11 @@ export function Hero() {
               <Link to="/kiosco/$token" params={{ token: "demo" }}>
                 Ver el kiosco de demo
               </Link>
-
             </Button>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
-            Sin tarjeta para empezar · Alta en 5 minutos · 1 € + IVA por trabajador/mes
+            Sin tarjeta para empezar · Alta en 5 minutos · 1 € + IVA por trabajador/mes · WhatsApp
+            opcional +1 € + IVA por trabajador activado
           </p>
         </div>
         <div className="card-soft p-6">

@@ -93,6 +93,8 @@ function WorkersPage() {
   const [linkTarget, setLinkTarget] = useState<Worker | null>(null);
   const [waTarget, setWaTarget] = useState<Worker | null>(null);
   const [waCode, setWaCode] = useState<string | null>(null);
+  const [waPriceConfirm, setWaPriceConfirm] = useState(false);
+
 
   const assignments = useQuery({
     queryKey: ["worker-locations", companyId],

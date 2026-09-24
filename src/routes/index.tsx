@@ -10,13 +10,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Control horario para bares, cafeterías y negocios pequeños: una tablet compartida, un PIN de 4 dígitos y registros listos para tu asesoría.",
+          "Control horario para bares, cafeterías y negocios pequeños: kiosco con PIN o fichaje opcional por WhatsApp. 30 días gratis; después 1 € + IVA por trabajador al mes.",
       },
       { property: "og:title", content: "TurnoPIN · Una pantalla. Un PIN. Y a trabajar." },
       {
         property: "og:description",
         content:
-          "Fichaje de empleados desde un único dispositivo del local. 30 días gratis, después 1 € + IVA por trabajador al mes.",
+          "Fichaje de empleados desde el kiosco del local o por WhatsApp opcional. 30 días gratis, después 1 € + IVA por trabajador al mes, WhatsApp +1 € + IVA por trabajador activado.",
       },
     ],
   }),

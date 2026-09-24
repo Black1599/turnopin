@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AlertTriangle, ArrowLeft, Check, Clock, Coffee, Delete, KeyRound, LogIn, LogOut } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Check, Clock, Coffee, Delete, KeyRound, LogIn, LogOut, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { formatDate, formatShortDate, todayMadrid } from "@/lib/fmt";
+import { formatDate, formatShortDate, formatTime, todayMadrid } from "@/lib/fmt";
 
 export const Route = createFileRoute("/kiosco/$token")({
   head: () => ({
@@ -41,6 +41,73 @@ type Result = {
   incidents?: { id: string; work_date: string; reported_time: string | null; no_recall: boolean }[];
 };
 
+type DemoEntry = NonNullable<Result["entries"]>[number] & { work_date: string };
+type DemoWorker = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  pin: string;
+  break_tracking: boolean;
+  status: "working" | "break" | "out";
+  open_shift: NonNullable<Result["open_shift"]> | null;
+  entries: DemoEntry[];
+  incidents: NonNullable<Result["incidents"]>;
+};
+
+function previousMadridDay(today: string) {
+  const [year, month, day] = today.split("-").map(Number);
+  return new Date(Date.UTC(year ?? 2000, (month ?? 1) - 1, (day ?? 1) - 1))
+    .toISOString()
+    .slice(0, 10);
+}
+
+function createDemoWorkers(): Record<string, DemoWorker> {
+  const today = todayMadrid();
+  const yesterday = previousMadridDay(today);
+  return {
+    "demo-ana": {
+      id: "demo-ana",
+      first_name: "Ana",
+      last_name: "Pérez",
+      pin: "2580",
+      break_tracking: false,
+      status: "out",
+      open_shift: null,
+      entries: [
+        { id: "demo-ana-entry", type: "entry", local_time: "09:00", work_date: today, corrected: false, manual: false },
+        { id: "demo-ana-exit", type: "exit", local_time: "13:00", work_date: today, corrected: false, manual: false },
+      ],
+      incidents: [],
+    },
+    "demo-luis": {
+      id: "demo-luis",
+      first_name: "Luis",
+      last_name: "García",
+      pin: "1111",
+      break_tracking: false,
+      status: "working",
+      open_shift: { local_time: "16:00", work_date: yesterday, location_name: "Bar Demo", same_location: true },
+      entries: [
+        { id: "demo-luis-entry", type: "entry", local_time: "16:00", work_date: yesterday, corrected: false, manual: false },
+      ],
+      incidents: [],
+    },
+    "demo-marta": {
+      id: "demo-marta",
+      first_name: "Marta",
+      last_name: "Ruiz",
+      pin: "2222",
+      break_tracking: true,
+      status: "working",
+      open_shift: { local_time: "08:00", work_date: today, location_name: "Bar Demo", same_location: true },
+      entries: [
+        { id: "demo-marta-entry", type: "entry", local_time: "08:00", work_date: today, corrected: false, manual: false },
+      ],
+      incidents: [],
+    },
+  };
+}
+
 const ERRORS: Record<string, string> = {
   invalid_pin: "PIN incorrecto. Vuelve a intentarlo.",
   rate_limited: "Demasiados intentos. Espera unos minutos.",
@@ -64,6 +131,10 @@ const LABEL: Record<string, string> = {
 
 function KioscoPage() {
   const { token } = Route.useParams();
+  const isDemo = token === "demo";
+  const [demoWorkers, setDemoWorkers] = useState(createDemoWorkers);
+  const demoWorkersRef = useRef(demoWorkers);
+  const demoSequence = useRef(0);
   const [selected, setSelected] = useState<{ id: string; name: string } | null>(null);
   const [pin, setPin] = useState("");
   const [session, setSession] = useState<Result | null>(null);
@@ -78,6 +149,7 @@ function KioscoPage() {
   const info = useQuery({
     queryKey: ["kiosk-info", token],
     queryFn: async () => {
+      if (isDemo) return { company_name: "Bar Demo", location_name: "Bar Demo", is_demo: true };
       const { data, error } = await supabase.rpc("kiosk_info", { p_token: token });
       if (error) throw error;
       return data as { company_name: string; location_name: string; is_demo: boolean } | null;
@@ -88,6 +160,14 @@ function KioscoPage() {
     queryKey: ["kiosk-workers", token],
     enabled: Boolean(info.data),
     queryFn: async () => {
+      if (isDemo) {
+        return Object.values(demoWorkersRef.current).map(({ id, first_name, last_name, break_tracking }) => ({
+          id,
+          first_name,
+          last_name,
+          break_tracking,
+        }));
+      }
       const { data, error } = await supabase.rpc("kiosk_list_workers", { p_token: token });
       if (error) throw error;
       return data ?? [];
@@ -104,18 +184,120 @@ function KioscoPage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [selected, session]);
 
+  function demoResult(worker: DemoWorker): Result {
+    const today = todayMadrid();
+    return {
+      ok: true,
+      status: worker.status,
+      today,
+      server_time: formatTime(new Date().toISOString()),
+      open_shift: worker.open_shift,
+      worker: {
+        id: worker.id,
+        first_name: worker.first_name,
+        last_name: worker.last_name,
+        break_tracking: worker.break_tracking,
+      },
+      entries: worker.entries.filter((entry) => entry.work_date === today),
+      incidents: worker.incidents,
+    };
+  }
+
+  function callDemo(action: Action, pinValue: string, extra: { reported?: string; noRecall?: boolean; newPin?: string }): Result {
+    if (!selected) return { ok: false, error: "worker_not_found" };
+    const current = demoWorkersRef.current[selected.id];
+    if (!current) return { ok: false, error: "worker_not_found" };
+    if (pinValue !== current.pin) return { ok: false, error: "invalid_pin" };
+
+    const now = new Date();
+    const localTime = formatTime(now.toISOString());
+    const today = todayMadrid();
+    const next: DemoWorker = {
+      ...current,
+      entries: [...current.entries],
+      incidents: [...current.incidents],
+    };
+
+    if (action === "change_pin") {
+      if (!/^\d{4}$/.test(extra.newPin ?? "")) return { ok: false, error: "invalid_new_pin" };
+      next.pin = extra.newPin ?? current.pin;
+      updateDemoWorker(next);
+      return { ok: true, pin_changed: true };
+    }
+
+    if (action === "entry") {
+      const stale = Boolean(next.open_shift && next.open_shift.work_date !== today);
+      if (next.status !== "out" && !(stale && (extra.reported || extra.noRecall))) {
+        return { ok: false, error: "already_working" };
+      }
+      if (stale) {
+        next.incidents.push({
+          id: nextDemoId("incident"),
+          work_date: next.open_shift?.work_date ?? today,
+          reported_time: extra.reported ?? null,
+          no_recall: extra.noRecall ?? false,
+        });
+      }
+      next.status = "working";
+      next.open_shift = { local_time: localTime, work_date: today, location_name: "Bar Demo", same_location: true };
+      next.entries.push(demoEntry("entry", localTime, today));
+    } else if (action === "exit") {
+      if (next.status === "out") return { ok: false, error: "not_working" };
+      if (next.status === "break") return { ok: false, error: "on_break" };
+      next.status = "out";
+      next.open_shift = null;
+      next.entries.push(demoEntry("exit", localTime, today));
+    } else if (action === "break_start") {
+      if (!next.break_tracking) return { ok: false, error: "breaks_disabled" };
+      if (next.status === "break") return { ok: false, error: "on_break" };
+      if (next.status === "out") return { ok: false, error: "not_working" };
+      next.status = "break";
+      next.entries.push(demoEntry("break_start", localTime, today));
+    } else if (action === "break_end") {
+      if (next.status !== "break") return { ok: false, error: "not_on_break" };
+      next.status = "working";
+      next.entries.push(demoEntry("break_end", localTime, today));
+    }
+
+    updateDemoWorker(next);
+    return demoResult(next);
+  }
+
+  function nextDemoId(kind: string) {
+    demoSequence.current += 1;
+    return `demo-${kind}-${demoSequence.current}`;
+  }
+
+  function demoEntry(type: string, localTime: string, workDate: string): DemoEntry {
+    return { id: nextDemoId(type), type, local_time: localTime, work_date: workDate, corrected: false, manual: false };
+  }
+
+  function updateDemoWorker(worker: DemoWorker) {
+    const next = { ...demoWorkersRef.current, [worker.id]: worker };
+    demoWorkersRef.current = next;
+    setDemoWorkers(next);
+  }
+
   async function call(action: Action, pinValue: string, extra: { reported?: string; noRecall?: boolean; newPin?: string } = {}) {
     if (!selected) return;
     setBusy(true);
-    const { data, error } = await supabase.rpc("kiosk_action", {
-      p_token: token,
-      p_worker_id: selected.id,
-      p_pin: pinValue,
-      p_action: action,
-      p_no_recall: extra.noRecall ?? false,
-      ...(extra.reported ? { p_reported_time: extra.reported } : {}),
-      ...(extra.newPin ? { p_new_pin: extra.newPin } : {}),
-    });
+    let data: unknown;
+    let error: { message?: string } | null = null;
+    if (isDemo) {
+      data = callDemo(action, pinValue, extra);
+    } else {
+      const response = await supabase.rpc("kiosk_action", {
+        p_token: token,
+        p_worker_id: selected.id,
+        p_pin: pinValue,
+        p_action: action,
+        p_no_recall: extra.noRecall ?? false,
+        ...(extra.reported ? { p_reported_time: extra.reported } : {}),
+        ...(extra.newPin ? { p_new_pin: extra.newPin } : {}),
+      });
+      data = response.data;
+      error = response.error;
+    }
     setBusy(false);
     if (error) {
       toast.error(
@@ -215,11 +397,18 @@ function KioscoPage() {
             </div>
           </div>
         </div>
-        {selected && (
-          <Button variant="ghost" size="sm" onClick={reset} className="h-11">
-            <ArrowLeft className="mr-1 h-4 w-4" /> Salir
-          </Button>
-        )}
+        <div className="flex items-center gap-1">
+          {selected && (
+            <Button variant="ghost" size="sm" onClick={reset} className="h-11">
+              <ArrowLeft className="mr-1 h-4 w-4" /> Salir
+            </Button>
+          )}
+          {isDemo && (
+            <Button asChild variant="ghost" size="sm" className="h-11 text-muted-foreground">
+              <Link to="/kiosco"><X className="mr-1 h-4 w-4" /> Salir de la demo</Link>
+            </Button>
+          )}
+        </div>
       </header>
 
       <main className="mx-auto flex w-full max-w-xl flex-1 flex-col px-5 py-6">

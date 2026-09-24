@@ -26,7 +26,7 @@ export function Hero() {
       <div className="container-page grid gap-12 overflow-hidden py-14 lg:grid-cols-[minmax(0,0.92fr)_minmax(34rem,1.08fr)] lg:items-center lg:gap-8 lg:py-20">
         <div className="min-w-0">
           <Badge variant="secondary" className="mb-5">
-            Registro de jornada para bares y negocios pequeños
+            Registro de jornada para negocios pequeños
           </Badge>
           <h1 className="text-4xl font-extrabold leading-[1.08] md:text-6xl">
             Una pantalla. Un PIN. Y a trabajar.
@@ -321,7 +321,7 @@ export function Pricing() {
 const faqs = [
   {
     q: "¿Mis empleados necesitan instalar una aplicación?",
-    a: "No. Se ficha desde la pantalla compartida del local con un PIN de 4 dígitos.",
+    a: "No. TurnoPIN funciona desde el navegador. El kiosco se abre con su enlace y cada empleado ficha con su PIN de 4 dígitos. Si lo activas para ese trabajador, también puede fichar por WhatsApp.",
   },
   {
     q: "¿Se puede fichar por WhatsApp?",
@@ -338,10 +338,6 @@ const faqs = [
   {
     q: "¿Se puede borrar un fichaje?",
     a: "No. Los registros no se eliminan desde la aplicación: solo se corrigen dejando rastro de la corrección.",
-  },
-  {
-    q: "¿TurnoPIN garantiza el cumplimiento legal?",
-    a: "No. Es una herramienta de registro de jornada. La forma de aplicarla en tu negocio debe revisarla tu asesoría.",
   },
   {
     q: "¿Puedo probarlo antes de pagar?",
@@ -371,7 +367,7 @@ export function FinalCta() {
   return (
     <section className="section border-t bg-surface">
       <div className="container-page text-center">
-        <h2 className="text-3xl font-bold md:text-4xl">Empieza hoy en tu barra</h2>
+        <h2 className="text-3xl font-bold md:text-4xl">Empieza hoy</h2>
         <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
           Crea tu cuenta, añade a tu equipo y deja la tablet lista para el próximo turno.
         </p>

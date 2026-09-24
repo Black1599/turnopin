@@ -83,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Registro de jornada para bares y negocios pequeños desde una pantalla compartida y un PIN de 4 dígitos.",
+          "Registro de jornada para negocios pequeños desde una pantalla compartida y un PIN de 4 dígitos.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

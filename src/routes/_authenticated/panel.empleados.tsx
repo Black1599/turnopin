@@ -208,7 +208,9 @@ function WorkersPage() {
       toast.success(editing ? "Trabajador actualizado" : "Trabajador creado");
       if (created && activeCount + 1 === MAX_SELF_SERVICE_WORKERS)
         toast.warning("Has llegado al máximo de 30 trabajadores activos en autoservicio.");
+      setWaPriceConfirm(false);
       setOpen(false);
+
       setEditing(null);
       setForm(emptyForm);
       invalidate();

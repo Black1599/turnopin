@@ -717,6 +717,48 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_billable_worker_cycles: {
+        Row: {
+          company_id: string
+          created_at: string
+          cycle_start: string
+          id: string
+          reported_to_stripe_at: string | null
+          worker_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          cycle_start: string
+          id?: string
+          reported_to_stripe_at?: string | null
+          worker_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          cycle_start?: string
+          id?: string
+          reported_to_stripe_at?: string | null
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_billable_worker_cycles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_billable_worker_cycles_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       whatsapp_message_events: {
         Row: {
           billable: boolean | null

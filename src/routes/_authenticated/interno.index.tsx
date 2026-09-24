@@ -20,7 +20,8 @@ export const Route = createFileRoute("/_authenticated/interno/")({
   }),
 });
 
-type Overview = { by_status: Record<string, number> } & { [k: string]: any };
+type K = "companies_total"|"demo_companies"|"pilot_companies"|"with_stripe_customer"|"active_workers"|"whatsapp_enabled_workers"|"locations"|"active_kiosks"|"entries_24h"|"entries_30d"|"pending_incidents"|"outbox_pending"|"outbox_failed"|"stripe_events_7d"|"stripe_events_unprocessed"|"billable_unreported";
+type Overview = Record<K, number> & { by_status: Record<string, number> };
 
 const STATUS: Record<string, string> = {
   trialing: "En prueba",

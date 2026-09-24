@@ -1,5 +1,15 @@
 import { Link } from "@tanstack/react-router";
-import { Check, KeyRound, ListChecks, MessageCircle, Monitor, ShieldCheck, Smartphone, Table2 } from "lucide-react";
+import {
+  Check,
+  CheckCheck,
+  KeyRound,
+  ListChecks,
+  MessageCircle,
+  Monitor,
+  ShieldCheck,
+  Smartphone,
+  Table2,
+} from "lucide-react";
 
 import {
   Accordion,
@@ -13,8 +23,8 @@ import { Button } from "@/components/ui/button";
 export function Hero() {
   return (
     <section className="border-b bg-background">
-      <div className="container-page grid gap-10 py-16 md:grid-cols-2 md:items-center md:py-24">
-        <div>
+      <div className="container-page grid gap-12 overflow-hidden py-14 lg:grid-cols-[minmax(0,0.92fr)_minmax(34rem,1.08fr)] lg:items-center lg:gap-8 lg:py-20">
+        <div className="min-w-0">
           <Badge variant="secondary" className="mb-5">
             Registro de jornada para bares y negocios pequeños
           </Badge>
@@ -22,9 +32,8 @@ export function Hero() {
             Una pantalla. Un PIN. Y a trabajar.
           </h1>
           <p className="mt-6 max-w-xl text-lg text-muted-foreground">
-            Pon una tablet o móvil compartido en la barra y ficha desde el kiosco. O activa
-            WhatsApp para quien lo prefiera: elige entrada, pausa, volver o salir con un botón.
-            Sin instalar aplicaciones.
+            Ficha desde el kiosco del local o, si quieres, directamente por WhatsApp. Tú eliges
+            qué trabajadores pueden usarlo y el kiosco sigue siempre disponible.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-12 px-7 text-base">
@@ -43,23 +52,82 @@ export function Hero() {
             opcional +1 € + IVA por trabajador activado
           </p>
         </div>
-        <div className="card-soft p-6">
-          <div className="text-sm text-muted-foreground">Bar Demo</div>
-          <div className="mt-1 text-2xl font-bold">Hola, Ana Pérez</div>
-          <div className="mt-6 rounded-lg bg-accent p-4 text-accent-foreground">
-            <div className="text-xs uppercase tracking-wide">Estado actual</div>
-            <div className="mt-1 text-xl font-bold">TRABAJANDO desde 08:00</div>
+
+        <div
+          className="relative mx-auto grid w-full max-w-2xl gap-5 sm:grid-cols-[minmax(0,1fr)_15rem] sm:items-center lg:min-h-[31rem] lg:grid-cols-none"
+          aria-label="TurnoPIN en el kiosco y por WhatsApp"
+        >
+          <div className="card-soft min-w-0 p-5 sm:pr-8 lg:absolute lg:left-0 lg:top-7 lg:w-[76%] lg:p-6 lg:pr-20">
+            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+              <Monitor className="h-4 w-4" aria-hidden="true" />
+              Kiosco · Bar Demo
+            </div>
+            <div className="mt-1 text-2xl font-bold">Hola, Ana Pérez</div>
+            <div className="mt-5 rounded-lg bg-accent p-4 text-accent-foreground">
+              <div className="text-xs uppercase tracking-wide">Estado actual</div>
+              <div className="mt-1 text-lg font-bold sm:text-xl">TRABAJANDO desde 08:00</div>
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-2.5">
+              {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((n) => (
+                <div key={n} className="keypad-key h-12 text-lg">
+                  {n}
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 flex h-11 items-center justify-center rounded-lg bg-primary text-sm font-semibold text-primary-foreground opacity-60">
+              Salir del trabajo
+            </div>
           </div>
-          <div className="mt-5 grid grid-cols-3 gap-3">
-            {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((n) => (
-              <div key={n} className="keypad-key h-14 text-xl">
-                {n}
+
+          <div className="relative z-10 mx-auto w-full max-w-[16rem] rounded-[2rem] border-[6px] border-foreground bg-card p-1.5 shadow-soft sm:max-w-none lg:absolute lg:bottom-0 lg:right-0 lg:w-[16.5rem]">
+            <div className="absolute left-1/2 top-1.5 h-4 w-20 -translate-x-1/2 rounded-b-xl bg-foreground" />
+            <div className="overflow-hidden rounded-[1.45rem] bg-surface">
+              <div className="flex items-center gap-2 bg-primary px-3 pb-3 pt-7 text-primary-foreground">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-foreground text-primary">
+                  <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-bold">TurnoPIN</div>
+                  <div className="text-[11px] opacity-80">Bar Demo</div>
+                </div>
               </div>
-            ))}
+
+              <div className="min-h-[19rem] space-y-3 p-3">
+                <div className="max-w-[92%] rounded-lg rounded-tl-sm bg-card p-3 text-xs shadow-key">
+                  <p className="font-semibold">Hola, Ana. ¿Qué quieres hacer?</p>
+                  <div className="mt-2 grid grid-cols-2 gap-1.5">
+                    {["Entrar", "Pausa", "Volver", "Salir"].map((action) => (
+                      <span
+                        key={action}
+                        className="flex min-h-8 items-center justify-center rounded-md border bg-background px-1.5 text-center font-semibold text-primary"
+                      >
+                        {action}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="ml-auto max-w-[82%] rounded-lg rounded-tr-sm bg-accent p-2.5 text-xs text-accent-foreground shadow-key">
+                  Entrar
+                  <CheckCheck className="ml-auto mt-1 h-3.5 w-3.5" aria-label="Mensaje leído" />
+                </div>
+
+                <div className="max-w-[92%] rounded-lg rounded-tl-sm bg-card p-3 text-xs shadow-key">
+                  <p className="font-semibold">Entrada registrada a las 08:57</p>
+                  <p className="mt-1 text-muted-foreground">Que tengas un buen turno.</p>
+                </div>
+              </div>
+              <div className="mx-3 mb-3 flex h-9 items-center gap-2 rounded-full bg-card px-3 text-[11px] text-muted-foreground">
+                <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                Mensaje
+              </div>
+            </div>
           </div>
-          <Button className="mt-5 h-12 w-full text-base" disabled>
-            Salir del trabajo
-          </Button>
+
+          <div className="absolute bottom-5 left-3 hidden items-center gap-2 rounded-lg border bg-background px-3 py-2 text-xs font-semibold shadow-soft lg:flex">
+            <MessageCircle className="h-4 w-4 text-primary" aria-hidden="true" />
+            WhatsApp opcional
+          </div>
         </div>
       </div>
     </section>

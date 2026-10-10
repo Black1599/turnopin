@@ -23,7 +23,8 @@ export const Route = createFileRoute("/privacidad")({
         marcas de entrada y salida.
       </p>
       <p>
-        El PIN se almacena cifrado y no puede consultarse: solo puede restablecerse. Cada negocio
+        El PIN no se guarda en claro: se almacena como un hash irreversible (bcrypt), por lo que no
+        puede consultarse, solo restablecerse. Cada negocio
         accede exclusivamente a sus propios datos.
       </p>
       <p>

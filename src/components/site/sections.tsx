@@ -185,7 +185,7 @@ const features = [
   {
     icon: KeyRound,
     title: "PIN de 4 dígitos",
-    text: "Se guarda cifrado y nunca se vuelve a mostrar. Puedes restablecerlo cuando quieras.",
+    text: "Se guarda como hash irreversible, nunca en claro, y no se puede consultar. Puedes restablecerlo cuando quieras.",
   },
   {
     icon: MessageCircle,

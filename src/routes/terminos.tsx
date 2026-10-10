@@ -9,7 +9,7 @@ export const Route = createFileRoute("/terminos")({
       {
         name: "description",
         content:
-          "Borrador de condiciones de uso de TurnoPIN: prueba de 30 días, planes de suscripción y responsabilidades.",
+          "Borrador de condiciones de uso de TurnoPIN: prueba de 30 días, precio por trabajador facturable y responsabilidades.",
       },
       { property: "og:title", content: "Términos del servicio · TurnoPIN" },
       { property: "og:description", content: "Plantilla pendiente de revisión profesional." },
